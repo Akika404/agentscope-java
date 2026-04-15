@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2025-12-26T09:08:54+00:00" /><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Agent as Tool" href="agent-as-tool.html"><link rel="prev" title="Tool" href="tool.html">
+    <meta property="article:modified_time" content="2026-04-13T01:37:58+00:00" /><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Agent as Tool" href="agent-as-tool.html"><link rel="prev" title="Tool" href="tool.html">
         <link rel="canonical" href="https://java.agentscope.io/en/task/mcp.html">
         <link rel="prefetch" href="../../_static/logo.svg" as="image">
 
@@ -340,11 +340,12 @@
 <li class="toctree-l1"><a class="reference internal" href="session.html">Session Management</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multimodal.html">Multimodal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="structured-output.html">Structured Output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="studio.html">Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="observability.html">Observability &amp; Studio</a></li>
 <li class="toctree-l1"><a class="reference internal" href="agui.html">AG-UI Protocol</a></li>
 <li class="toctree-l1"><a class="reference internal" href="a2a.html">A2A Protocol</a></li>
 <li class="toctree-l1"><a class="reference internal" href="msghub.html">MsgHub</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ai-coding.html">Coding with AI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="online-training.html">Online Training</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Multi Agent</span></p>
 <ul>
@@ -381,11 +382,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../zh/task/session.html">会话管理</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../zh/task/multimodal.html">多模态</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../zh/task/structured-output.html">结构化输出</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../zh/task/studio.html">Studio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../zh/task/observability.html">可观测与调试</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../zh/task/agui.html">AG-UI 协议</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../zh/task/a2a.html">A2A 协议</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../zh/task/msghub.html">MsgHub</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../zh/task/ai-coding.html">使用 AI 编程</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../zh/task/online-training.html">在线训练</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">多智能体</span></p>
 <ul>
@@ -612,9 +614,9 @@
 <span class="n">toolkit</span><span class="p">.</span><span class="na">createToolGroup</span><span class="p">(</span><span class="n">groupName</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Tools for operating system files&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
 
 <span class="c1">// Register MCP tools in a group</span>
-<span class="n">toolkit</span><span class="p">.</span><span class="na">registration</span><span class="p">().</span><span class="na">mcpClient</span><span class="p">(</span><span class="n">mcpClient</span><span class="p">).</span><span class="na">group</span><span class="p">(</span><span class="s">&quot;groupName&quot;</span><span class="p">).</span><span class="na">apply</span><span class="p">();</span>
+<span class="n">toolkit</span><span class="p">.</span><span class="na">registration</span><span class="p">().</span><span class="na">mcpClient</span><span class="p">(</span><span class="n">mcpClient</span><span class="p">).</span><span class="na">group</span><span class="p">(</span><span class="n">groupName</span><span class="p">).</span><span class="na">apply</span><span class="p">();</span>
 
-<span class="c1">// Create agent that only uses specific groups</span>
+<span class="c1">// Create agent with toolkit (only active group tools available)</span>
 <span class="n">ReActAgent</span><span class="w"> </span><span class="n">agent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ReActAgent</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;Assistant&quot;</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -677,7 +679,7 @@
 </pre></div>
 </div>
 <blockquote>
-<div><p><strong>Note</strong>: Query parameters only apply to HTTP transports (SSE and HTTP). They are ignored for StdIO transport.</p>
+<div><p><strong>Note</strong>: Query parameters and HTTP headers only apply to HTTP transports (SSE and HTTP). They are silently ignored for StdIO transport.</p>
 </div></blockquote>
 </section>
 <section id="synchronous-vs-asynchronous-clients">
@@ -692,6 +694,43 @@
 <span class="n">McpClientWrapper</span><span class="w"> </span><span class="n">syncClient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">McpClientBuilder</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;sync-mcp&quot;</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">stdioTransport</span><span class="p">(</span><span class="s">&quot;npx&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;-y&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;@modelcontextprotocol/server-filesystem&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/tmp&quot;</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">buildSync</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="elicitation-support">
+<h3>elicitation support<a class="headerlink" href="#elicitation-support" title="Link to this heading">¶</a></h3>
+<p>The elicitation feature in MCP enables interactive information collection during the invocation of MCP server-side tools.</p>
+<p>Asynchronous client example</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">McpClientWrapper</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">McpClientBuilder</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;mcp-async&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="na">stdioTransport</span><span class="p">(</span><span class="s">&quot;python&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;-m&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mcp_server&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="na">asyncElicitation</span><span class="p">(</span><span class="n">request</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="c1">// Handle elicitation request</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Received elicit request: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">message</span><span class="p">());</span>
+<span class="w">        </span><span class="c1">// Return Mono&lt;ElicitResult&gt;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Mono</span><span class="p">.</span><span class="na">just</span><span class="p">(</span>
+<span class="w">            </span><span class="n">ElicitResult</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">action</span><span class="p">(</span><span class="n">ElicitResult</span><span class="p">.</span><span class="na">Action</span><span class="p">.</span><span class="na">ACCEPT</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">data</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;response&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;user input&quot;</span><span class="p">))</span>
+<span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">})</span>
+<span class="w">    </span><span class="p">.</span><span class="na">buildAsync</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">block</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Synchronous client example</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">McpClientWrapper</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">McpClientBuilder</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;mcp-sync&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="na">stdioTransport</span><span class="p">(</span><span class="s">&quot;python&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;-m&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mcp_server&quot;</span><span class="p">)</span>
+<span class="p">.</span><span class="na">syncElicitation</span><span class="p">(</span><span class="n">request</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="c1">// Handle elicitation request</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Received elicit request: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">message</span><span class="p">());</span>
+<span class="w">        </span><span class="c1">// return ElicitResult directly</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ElicitResult</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="na">action</span><span class="p">(</span><span class="n">ElicitResult</span><span class="p">.</span><span class="na">Action</span><span class="p">.</span><span class="na">ACCEPT</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">data</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;response&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;user input&quot;</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="w">    </span><span class="p">})</span>
+<span class="w">    </span><span class="p">.</span><span class="na">buildSync</span><span class="p">();</span>
 </pre></div>
 </div>
 </section>
@@ -834,7 +873,7 @@ mvn<span class="w"> </span>exec:java<span class="w"> </span>-Dexec.mainClass<spa
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2025-12-26</div>
+              Last updated on 2026-04-13</div>
           </div>
           <div class="right-details">
             <div class="icons">
@@ -896,6 +935,7 @@ mvn<span class="w"> </span>exec:java<span class="w"> </span>-Dexec.mainClass<spa
 <li><a class="reference internal" href="#http-headers">HTTP Headers</a></li>
 <li><a class="reference internal" href="#query-parameters">Query Parameters</a></li>
 <li><a class="reference internal" href="#synchronous-vs-asynchronous-clients">Synchronous vs Asynchronous Clients</a></li>
+<li><a class="reference internal" href="#elicitation-support">elicitation support</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#managing-mcp-clients">Managing MCP Clients</a><ul>

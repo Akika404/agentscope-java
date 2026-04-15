@@ -34,15 +34,14 @@ AgentScope includes production-ready tools that address common challenges in age
 AgentScope is designed to integrate with existing enterprise infrastructure without requiring extensive modifications:
 
 - **MCP Protocol** - Integrate with any MCP-compatible server to instantly extend agent capabilities. Connect to the growing ecosystem of MCP tools and services—from file systems and databases to web browsers and code interpreters—without writing custom integration code.
-- **A2A Protocol** - Enable distributed multi-agent collaboration through standard service discovery. Register agent capabilities to Nacos or similar registries, allowing agents to discover and invoke each other as naturally as calling microservices.
+- **A2A Protocol** - Enable distributed multi-agent collaboration through extension modules. Register agent capabilities to Nacos or similar registries (via `agentscope-extensions-nacos-a2a`), allowing agents to discover and invoke each other as naturally as calling microservices.
 
 ### Production Grade
 
 Built for enterprise deployment requirements:
 
-- **High Performance** - Reactive architecture based on Project Reactor ensures non-blocking execution. GraalVM native image compilation achieves 200ms cold start times, making AgentScope suitable for serverless and auto-scaling environments.
-- **Security Sandbox** - AgentScope Runtime provides isolated execution environments for untrusted tool code. Includes pre-built sandboxes for GUI automation, file system operations, and mobile device interaction, preventing unauthorized access to system resources.
-- **Observability** - Native integration with OpenTelemetry for distributed tracing across the entire agent execution pipeline. AgentScope Studio provides visual debugging, real-time monitoring, and comprehensive logging for development and production environments.
+- **High Performance** - Reactive architecture based on Project Reactor ensures non-blocking execution. Supports GraalVM native image compilation through Micronaut/Quarkus, suitable for serverless and auto-scaling environments.
+- **Observability** - Pluggable Tracer SPI with extension module support for OpenTelemetry, enabling distributed tracing across the entire agent execution pipeline. AgentScope Studio provides visual debugging, real-time monitoring, and comprehensive logging for development and production environments.
 
 ## Requirements
 
@@ -167,7 +166,7 @@ implementation 'io.agentscope:agentscope:1.0.11'
 
 The all-in-one package includes these dependencies by default:
 
-- DashScope SDK (Qwen series models)
+- DashScope model support (Qwen series models, via native HTTP calls, no additional SDK required)
 - MCP SDK (Model Context Protocol)
 - Reactor Core, Jackson, SLF4J (base frameworks)
 
@@ -316,6 +315,7 @@ implementation 'io.agentscope:agentscope-core:1.0.11'
 |--------|---------|-------------------|
 | [agentscope-extensions-scheduler-common](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-common) | Scheduler Common | `io.agentscope:agentscope-extensions-scheduler-common` |
 | [agentscope-extensions-scheduler-xxl-job](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-xxl-job) | XXL-Job Scheduler | `io.agentscope:agentscope-extensions-scheduler-xxl-job` |
+| [agentscope-extensions-scheduler-quartz](https://central.sonatype.com/artifact/io.agentscope/agentscope-extensions-scheduler-quartz) | Quartz Scheduler | `io.agentscope:agentscope-extensions-scheduler-quartz` |
 
 #### User Interface
 
@@ -355,6 +355,8 @@ Additional starters:
 |---------|---------|-------------------|
 | agentscope-a2a-spring-boot-starter | A2A Integration | `io.agentscope:agentscope-a2a-spring-boot-starter` |
 | agentscope-agui-spring-boot-starter | AG-UI Integration | `io.agentscope:agentscope-agui-spring-boot-starter` |
+| agentscope-chat-completions-web-starter | Chat Completions Web Integration | `io.agentscope:agentscope-chat-completions-web-starter` |
+| agentscope-nacos-spring-boot-starter | Nacos Integration | `io.agentscope:agentscope-nacos-spring-boot-starter` |
 
 ### Quarkus
 
@@ -451,9 +453,11 @@ Message is the most fundamental data structure in AgentScope, used for:
 
 | Field | Description |
 |-------|-------------|
+| `id` | Unique message identifier (auto-generated UUID) |
 | `name` | Sender's name, used to distinguish identities in multi-agent scenarios |
 | `role` | Role: `USER`, `ASSISTANT`, `SYSTEM`, or `TOOL` |
 | `content` | List of content blocks, supports multiple types |
+| `timestamp` | Message timestamp |
 | `metadata` | Optional structured data |
 
 **Content types**:
@@ -478,6 +482,8 @@ Messages returned by Agent contain additional metadata to help understand execut
 | Value | Description |
 |-------|-------------|
 | `MODEL_STOP` | Task completed normally |
+| `TOOL_CALLS` | Model returned tool calls (internal tools, framework continues execution) |
+| `STRUCTURED_OUTPUT` | Structured output completed |
 | `TOOL_SUSPENDED` | Tool needs external execution, waiting for result |
 | `REASONING_STOP_REQUESTED` | Paused by Hook during Reasoning phase (HITL) |
 | `ACTING_STOP_REQUESTED` | Paused by Hook during Acting phase (HITL) |
@@ -512,10 +518,11 @@ Msg imgMsg = Msg.builder()
 The Agent interface defines the core contract:
 
 ```java
-public interface Agent {
-    Mono<Msg> call(Msg msg);      // Process message and return response
-    Flux<Msg> stream(Msg msg);    // Stream response in real-time
-    void interrupt();             // Stop execution
+public interface Agent extends CallableAgent, StreamableAgent, ObservableAgent {
+    String getAgentId();
+    String getName();
+    void interrupt();
+    void interrupt(Msg msg);
 }
 ```
 
@@ -618,8 +625,13 @@ Formatter is responsible for converting AgentScope messages to the format requir
 - Identity handling in multi-agent scenarios
 
 **Built-in implementations**:
-- `DashScopeFormatter` - Alibaba Cloud DashScope (Qwen series)
-- `OpenAIFormatter` - OpenAI and compatible APIs
+- `DashScopeChatFormatter` - Alibaba Cloud DashScope (Qwen series)
+- `OpenAIChatFormatter` - OpenAI and compatible APIs
+- `AnthropicChatFormatter` - Anthropic (Claude series)
+- `GeminiChatFormatter` - Google Gemini
+- `OllamaChatFormatter` - Ollama local models
+- `DeepSeekFormatter` - DeepSeek
+- `GLMFormatter` - GLM (Zhipu)
 
 > Formatter is automatically selected based on Model type; manual configuration is usually not needed.
 
@@ -641,6 +653,9 @@ Hook provides extension points at key nodes of the ReAct loop through an event m
 | `PreActingEvent` | Before executing tool | ✓ |
 | `PostActingEvent` | After tool execution | ✓ |
 | `ActingChunkEvent` | During tool streaming output | - |
+| `PreSummaryEvent` | Before summary generation | ✓ |
+| `PostSummaryEvent` | After summary generation | ✓ |
+| `SummaryChunkEvent` | During summary streaming output | - |
 | `ErrorEvent` | When error occurs | - |
 
 **Hook Priority**: Hooks execute in priority order (lower value = higher priority), default is 100.
@@ -688,9 +703,10 @@ ReActAgent agent = ReActAgent.builder()
 
 **Problem solved**: Agent state such as conversation history and configuration needs to be saved and restored to support session persistence.
 
-AgentScope separates "initialization" from "state":
-- `saveState()` - Export current state as a serializable Map
-- `loadState()` - Restore from saved state
+AgentScope separates "initialization" from "state" through the `StateModule` interface:
+- `saveTo(Session, SessionKey)` - Save current state to Session
+- `loadFrom(Session, SessionKey)` - Restore state from Session
+- `loadIfExists(Session, SessionKey)` - Restore state from Session if it exists
 
 **Session** provides persistent storage across runs:
 
@@ -769,12 +785,16 @@ The `ReActAgent` class exposes the following parameters in its constructor:
 | Parameter | Further Reading | Description |
 |-----------|-----------------|-------------|
 | `name` (required) | | Agent's name |
-| `sysPrompt` (required) | | System prompt |
+| `sysPrompt` | | System prompt (recommended) |
 | `model` (required) | [Model Integration](../task/model.md) | Model for generating responses |
 | `toolkit` | [Tool System](../task/tool.md) | Module for registering/calling tool functions |
 | `memory` | [Memory Management](../task/memory.md) | Short-term memory for conversation history |
-| `longTermMemory` | [Long-term Memory](../task/long-term-memory.md) | Long-term memory |
-| `longTermMemoryMode` | [Long-term Memory](../task/long-term-memory.md) | Long-term memory mode: `AGENT_CONTROL`, `STATIC_CONTROL`, or `BOTH` |
+| `description` | | Agent description |
+| `generateOptions` | | LLM generation parameters (temperature, topP, maxTokens, etc.) |
+| `toolExecutionContext` | [Tool System](../task/tool.md) | Tool execution context for dependency injection into tools |
+| `planNotebook` | [Planning](../task/plan.md) | Plan manager |
+| `longTermMemory` | [Memory Management](../task/memory.md) | Long-term memory |
+| `longTermMemoryMode` | [Memory Management](../task/memory.md) | Long-term memory mode: `AGENT_CONTROL`, `STATIC_CONTROL`, or `BOTH` |
 | `maxIters` | | Max iterations for generating response (default: 10) |
 | `hooks` | [Hook System](../task/hook.md) | Event hooks for customizing agent behavior |
 | `modelExecutionConfig` | | Timeout/retry config for model calls |
@@ -936,7 +956,7 @@ This guide introduces the LLM models supported by AgentScope Java and how to con
 | Provider   | Class                   | Streaming | Tools | Vision | Reasoning |
 |------------|-------------------------|-----------|-------|--------|-----------|
 | DashScope  | `DashScopeChatModel`    | ✅        | ✅    | ✅     | ✅        |
-| OpenAI     | `OpenAIChatModel`       | ✅        | ✅    | ✅     |           |
+| OpenAI     | `OpenAIChatModel`       | ✅        | ✅    | ✅     | ✅        |
 | Anthropic  | `AnthropicChatModel`    | ✅        | ✅    | ✅     | ✅        |
 | Gemini     | `GeminiChatModel`       | ✅        | ✅    | ✅     | ✅        |
 | Ollama     | `OllamaChatModel`       | ✅        | ✅    | ✅     | ✅        |
@@ -976,6 +996,31 @@ DashScopeChatModel model = DashScopeChatModel.builder()
 | `stream` | Enable streaming, default `true` |
 | `enableThinking` | Enable thinking mode to show reasoning process |
 | `enableSearch` | Enable web search for real-time information |
+| `endpointType` | API endpoint type (default `AUTO` auto-detect), options: `TEXT` (force text API) or `MULTIMODAL` (force multimodal API) |
+| `defaultOptions` | Default generation options (temperature, maxTokens, etc.) |
+| `formatter` | Message formatter (default `DashScopeChatFormatter`) |
+
+### Endpoint Type (endpointType)
+
+DashScope models support both text and multimodal API endpoints. By default, the framework automatically detects the appropriate endpoint type based on the model name (e.g., `qwen-vl-*` and `qwen3.5` series automatically use the multimodal endpoint).
+
+When auto-detection is inaccurate (e.g., using custom model names or compatible APIs), you can manually specify the endpoint type:
+
+```java
+// Force multimodal API (suitable for scenarios with images, audio, etc.)
+DashScopeChatModel model = DashScopeChatModel.builder()
+        .apiKey(System.getenv("DASHSCOPE_API_KEY"))
+        .modelName("custom-model")
+        .endpointType(EndpointType.MULTIMODAL)
+        .build();
+
+// Force text API
+DashScopeChatModel model = DashScopeChatModel.builder()
+        .apiKey(System.getenv("DASHSCOPE_API_KEY"))
+        .modelName("custom-model")
+        .endpointType(EndpointType.TEXT)
+        .build();
+```
 
 ### Thinking Mode
 
@@ -1032,6 +1077,7 @@ OpenAIChatModel model = OpenAIChatModel.builder()
 | `modelName` | Model name, e.g., `gpt-4o`, `gpt-4o-mini` |
 | `baseUrl` | Custom API endpoint (optional) |
 | `stream` | Enable streaming, default `true` |
+| `generateOptions` | Default generation options (note: OpenAI uses `.generateOptions()` instead of `.defaultOptions()`) |
 
 ## Anthropic
 
@@ -1202,7 +1248,7 @@ GenerateOptions options = GenerateOptions.builder()
         .topK(40)                   // Top-K sampling
         .maxTokens(2000)            // Maximum output tokens
         .seed(42L)                  // Random seed
-        .toolChoice(new ToolChoice.auto())  // Tool choice strategy
+        .toolChoice(new ToolChoice.Auto())  // Tool choice strategy
         .build();
 
 DashScopeChatModel model = DashScopeChatModel.builder()
@@ -1226,17 +1272,21 @@ OllamaChatModel model = OllamaChatModel.builder()
 | `topP` | Double | Nucleus sampling threshold, 0.0-1.0 |
 | `topK` | Integer | Limits candidate tokens |
 | `maxTokens` | Integer | Maximum tokens to generate |
+| `maxCompletionTokens` | Integer | Maximum completion tokens |
 | `thinkingBudget` | Integer | Token budget for thinking |
+| `reasoningEffort` | String | Reasoning effort level (e.g., `low`, `medium`, `high`) |
+| `frequencyPenalty` | Double | Frequency penalty, -2.0-2.0 |
+| `presencePenalty` | Double | Presence penalty, -2.0-2.0 |
 | `seed` | Long | Random seed |
 | `toolChoice` | ToolChoice | Tool choice strategy |
 
 ### Tool Choice Strategy
 
 ```java
-ToolChoice.auto()              // Model decides (default)
-ToolChoice.none()              // Disable tool calling
-ToolChoice.required()          // Force tool calling
-ToolChoice.specific("tool_name")  // Force specific tool
+new ToolChoice.Auto()              // Model decides (default)
+new ToolChoice.None()              // Disable tool calling
+new ToolChoice.Required()          // Force tool calling
+new ToolChoice.Specific("tool_name")  // Force specific tool
 ```
 
 ### Additional Parameters
@@ -1422,7 +1472,7 @@ public Mono<String> search(
 
 ### Streaming Tools
 
-Use `ToolEmitter` to send intermediate progress, suitable for long-running tasks:
+Use `ToolEmitter` to send intermediate progress, suitable for long-running tasks (progress is only visible to Hooks, not sent to LLM):
 
 ```java
 @Tool(description = "Generate data")
@@ -1550,6 +1600,7 @@ toolkit.registerTool(new WriteFileTool("/safe/workspace"));
 | Tool | Method | Description |
 |------|--------|-------------|
 | `ReadFileTool` | `view_text_file` | View files by line range |
+| `ReadFileTool` | `list_directory` | List files and folders in a directory |
 | `WriteFileTool` | `write_text_file` | Create/overwrite/replace file content |
 | `WriteFileTool` | `insert_text_file` | Insert content at specified line |
 
@@ -1580,8 +1631,8 @@ toolkit.registerTool(new OpenAIMultiModalTool(System.getenv("OPENAI_API_KEY")));
 
 | Tool | Capabilities |
 |------|--------------|
-| `DashScopeMultiModalTool` | Text-to-image, image-to-text, text-to-speech, speech-to-text |
-| `OpenAIMultiModalTool` | Text-to-image, image editing, image variations, image-to-text, text-to-speech, speech-to-text |
+| `DashScopeMultiModalTool` | Text-to-image, image-to-text, text-to-speech, speech-to-text, text-to-video, image-to-video, first-last-frame-to-video, video understanding |
+| `OpenAIMultiModalTool` | Text-to-image, image-to-text, text-to-speech, speech-to-text |
 
 ### Sub-agent Tools
 
@@ -1632,7 +1683,7 @@ Toolkit toolkit = new Toolkit(ToolkitConfig.builder()
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `parallel` | Whether to execute multiple tools in parallel | `true` |
+| `parallel` | Whether to execute multiple tools in parallel | `false` |
 | `allowToolDeletion` | Whether to allow tool deletion | `true` |
 | `executionConfig.timeout` | Tool execution timeout | 5 minutes |
 
@@ -1642,7 +1693,7 @@ Allow agents to autonomously manage tool groups:
 
 ```java
 toolkit.registerMetaTool();
-// Agent can call "reset_equipped_tools" to activate/deactivate tool groups
+// Agent can call "reset_equipped_tools" to activate (reset to specified set) tool groups
 ```
 
 When there are many tool groups, agents can autonomously choose which groups to activate based on task requirements.
@@ -1677,14 +1728,16 @@ if (response.getGenerateReason() == GenerateReason.TOOL_SUSPENDED) {
     List<ToolUseBlock> pendingTools = response.getContentBlocks(ToolUseBlock.class);
 
     // After external execution, provide result
-    Msg toolResult = Msg.builder()
-        .role(MsgRole.TOOL)
-        .content(ToolResultBlock.of(toolUse.getId(), toolUse.getName(),
-            TextBlock.builder().text("External execution result").build()))
-        .build();
+    for (ToolUseBlock toolUse : pendingTools) {
+        Msg toolResult = Msg.builder()
+            .role(MsgRole.TOOL)
+            .content(ToolResultBlock.of(toolUse.getId(), toolUse.getName(),
+                TextBlock.builder().text("External execution result").build()))
+            .build();
 
-    // Resume execution
-    response = agent.call(toolResult).block();
+        // Resume execution
+        response = agent.call(toolResult).block();
+    }
 }
 ```
 
@@ -1886,9 +1939,9 @@ String groupName = "filesystem";
 toolkit.createToolGroup(groupName, "Tools for operating system files", true);
 
 // Register MCP tools in a group
-toolkit.registration().mcpClient(mcpClient).group("groupName").apply();
+toolkit.registration().mcpClient(mcpClient).group(groupName).apply();
 
-// Create agent that only uses specific groups
+// Create agent with toolkit (only active group tools available)
 ReActAgent agent = ReActAgent.builder()
         .name("Assistant")
         .model(model)
@@ -1951,7 +2004,7 @@ McpClientWrapper client = McpClientBuilder.create("mcp")
         .block();
 ```
 
-> **Note**: Query parameters only apply to HTTP transports (SSE and HTTP). They are ignored for StdIO transport.
+> **Note**: Query parameters and HTTP headers only apply to HTTP transports (SSE and HTTP). They are silently ignored for StdIO transport.
 
 ### Synchronous vs Asynchronous Clients
 
@@ -1966,6 +2019,45 @@ McpClientWrapper asyncClient = McpClientBuilder.create("async-mcp")
 McpClientWrapper syncClient = McpClientBuilder.create("sync-mcp")
         .stdioTransport("npx", "-y", "@modelcontextprotocol/server-filesystem", "/tmp")
         .buildSync();
+```
+
+### elicitation support
+
+The elicitation feature in MCP enables interactive information collection during the invocation of MCP server-side tools.
+
+Asynchronous client example
+```java
+McpClientWrapper client = McpClientBuilder.create("mcp-async")
+.stdioTransport("python", "-m", "mcp_server")
+.asyncElicitation(request -> {
+// Handle elicitation request
+System.out.println("Received elicit request: " + request.message());
+        // Return Mono<ElicitResult>
+        return Mono.just(
+            ElicitResult.builder()
+                .action(ElicitResult.Action.ACCEPT)
+                .data(Map.of("response", "user input"))
+                .build()
+        );
+    })
+    .buildAsync()
+    .block();
+```
+
+Synchronous client example
+```java
+McpClientWrapper client = McpClientBuilder.create("mcp-sync")
+.stdioTransport("python", "-m", "mcp_server")
+.syncElicitation(request -> {
+// Handle elicitation request
+System.out.println("Received elicit request: " + request.message());
+        // return ElicitResult directly
+        return ElicitResult.builder()
+            .action(ElicitResult.Action.ACCEPT)
+            .data(Map.of("response", "user input"))
+            .build();
+    })
+    .buildSync();
 ```
 
 ## Managing MCP Clients
@@ -2360,7 +2452,7 @@ ReActAgent agent = ReActAgent.builder()
 ## Simplified Integration
 
 ```java
-SkillBox skillBox = new SkillBox();
+SkillBox skillBox = new SkillBox(new Toolkit());
 
 skillBox.registerSkill(dataSkill);
 
@@ -2650,7 +2742,6 @@ ReActAgent agent = ReActAgent.builder()
             .limit(3)
             .scoreThreshold(0.3)
             .build())
-    .enableOnlyForUserQueries(true)  // Retrieve only for user messages
     .build();
 ```
 
@@ -3162,7 +3253,7 @@ AgentScope Java uses a **unified event model** where all hooks implement the `on
 
 | Event Type            | Timing                    | Modifiable | Description                              |
 |-----------------------|---------------------------|------------|------------------------------------------|
-| PreCallEvent          | Before agent call         | ❌         | Before agent starts processing (notification-only)           |
+| PreCallEvent          | Before agent call         | ✅         | Before agent starts processing (modifiable input messages)           |
 | PostCallEvent         | After agent call          | ✅         | After agent completes response (can modify final message)           |
 | PreReasoningEvent     | Before reasoning          | ✅         | Before LLM reasoning (can modify input messages)          |
 | PostReasoningEvent    | After reasoning           | ✅         | After LLM reasoning (can modify reasoning result)            |
@@ -3170,6 +3261,9 @@ AgentScope Java uses a **unified event model** where all hooks implement the `on
 | PreActingEvent        | Before tool execution     | ✅         | Before tool execution (can modify tool parameters)                    |
 | PostActingEvent       | After tool execution      | ✅         | After tool execution (can modify tool result)                |
 | ActingChunkEvent      | During tool stream        | ❌         | Tool execution progress chunks (notification-only)    |
+| PreSummaryEvent       | Before summary            | ✅         | Before summary generation when max iterations reached         |
+| PostSummaryEvent      | After summary             | ✅         | After summary generation (can modify summary result)       |
+| SummaryChunkEvent     | During summary stream     | ❌         | Each chunk of streaming summary (notification-only)           |
 | ErrorEvent            | On error                  | ❌         | When errors occur (notification-only)                        |
 
 ## Creating Hooks
@@ -3276,6 +3370,44 @@ ReActAgent agent = ReActAgent.builder()
 ```
 
 Hooks are immutable after agent construction.
+
+## Built-in JSONL Trace Exporter
+
+For local debugging and offline troubleshooting, AgentScope Java provides a built-in JSONL exporter:
+
+> Warning: the JSONL trace exporter writes full prompts, messages, tool inputs, and error stack
+> traces to local files. These records may contain sensitive user data, credentials, or other
+> secrets, so only enable it in trusted environments and handle the output file as sensitive data.
+
+```java
+import io.agentscope.core.ReActAgent;
+import io.agentscope.core.hook.recorder.JsonlTraceExporter;
+import io.agentscope.core.model.Model;
+import io.agentscope.core.tool.Toolkit;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+
+public class JsonlTraceExample {
+
+    public void run(Model model, Toolkit toolkit) throws IOException {
+        try (JsonlTraceExporter exporter =
+                JsonlTraceExporter.builder(Path.of("logs", "agentscope-trace.jsonl"))
+                        .includeReasoningChunks(true) // optional
+                        .includeActingChunks(true)    // optional
+                        .build()) {
+            ReActAgent agent = ReActAgent.builder()
+                    .name("Assistant")
+                    .model(model)
+                    .toolkit(toolkit)
+                    .hooks(List.of(exporter))
+                    .build();
+
+            // Use the agent while the exporter is still open
+        }
+    }
+}
+```
 
 ## Hook Examples
 
@@ -3771,7 +3903,7 @@ mvn exec:java -Dexec.mainClass="io.agentscope.examples.advanced.ReMeExample"
 
 - [AutoContextMemory Documentation](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-extensions/agentscope-extensions-autocontext-memory/README.md)
 - [Session Management](./session.md)
-- [ReActAgent Guide](./react-agent.md)
+- [ReActAgent Guide](./agent-config.md)
 
 
 # Plan
@@ -3861,6 +3993,30 @@ During execution, the system automatically injects plan hints before each reason
 See `agentscope-examples/quickstart/src/main/java/io/agentscope/examples/quickstart/PlanNotebookExample.java`
 
 ## Configuration Options
+
+### User Confirmation (needUserConfirm)
+
+Controls whether the agent needs to wait for user confirmation before starting execution after creating a plan.
+
+**Default Value**: `true` (user confirmation required)
+
+When enabled, the agent will display the plan content and ask the user whether to proceed (e.g., "Should I proceed with this plan?") after creating a plan. It will only start executing subtasks after the user explicitly confirms (e.g., replying "yes", "go ahead"). If the user's message already implies execution intent (e.g., "execute the plan"), confirmation is skipped and execution begins directly.
+
+When disabled, the agent will immediately start executing after creating the plan, without waiting for user confirmation.
+
+```java
+// Require user confirmation (default behavior)
+PlanNotebook planNotebook = PlanNotebook.builder()
+        .needUserConfirm(true)
+        .build();
+
+// No confirmation needed, execute immediately after creating plan
+PlanNotebook planNotebook = PlanNotebook.builder()
+        .needUserConfirm(false)
+        .build();
+```
+
+> **Note**: When subtasks are already in execution (status is `in_progress`), confirmation rule hints will not be injected regardless of the `needUserConfirm` setting.
 
 ### Limit Subtask Count
 
@@ -4880,13 +5036,22 @@ try {
 - **Agent Configuration**: [agent-config.md](./agent-config.md)
 
 
-# Studio (Visual Debugging)
+# Observability & Studio
+
+AgentScope Java provides multiple mechanisms for observing and debugging agent execution:
+
+- **Studio (Visual Debugging)**: Real-time visualization and interactive debugging through a Web UI
+- **OpenTelemetry Tracing**: Export trace data to external observability platforms (e.g., Langfuse, Jaeger) via the OTLP protocol
+
+---
+
+## Studio (Visual Debugging)
 
 Studio provides a Web interface for real-time visualization of Agent execution processes, supporting interactive debugging and message tracing.
 
 ---
 
-## Core Features
+### Core Features
 
 - **Real-time Visualization**: Web interface displays Agent reasoning and execution processes
 - **Interactive Input**: Interact with Agent through Web UI
@@ -4895,9 +5060,9 @@ Studio provides a Web interface for real-time visualization of Agent execution p
 
 ---
 
-## Quick Start
+### Quick Start
 
-### 1. Start Studio Server
+#### 1. Start Studio Server
 
 Start from source code
 ```bash
@@ -4911,11 +5076,11 @@ Install via npm
 npm install -g @agentscope/studio  # or npm install @agentscope/studio
 as_studio
 ```
-Studio will run at http://localhost:5173
+Studio will run at http://localhost:5173 (frontend dev server)
 
 ![Studio Server Page](../../imgs/studioServer.png)
 
-### 2. Java Application Integration
+#### 2. Java Application Integration
 
 ```java
 import io.agentscope.core.studio.StudioManager;
@@ -4944,11 +5109,11 @@ agent.call(msg).block();
 StudioManager.shutdown();
 ```
 
-### 3. View Trace Information in AgentScope Studio
+#### 3. View Trace Information in AgentScope Studio
 
 ![Trace Information](../../imgs/studioServer-trace.png)
 
-## StudioUserAgent
+### StudioUserAgent
 
 Receive user input through Web UI.
 
@@ -4969,18 +5134,18 @@ You can find the Project in Studio's Projects and debug through the WebUI
 
 ![Studio Server Web UI Input Interface](../../imgs/studioServer-webUI.png)
 
-### Conversation Loop
+#### Conversation Loop
 
 ```java
 Msg msg = null;
 while (true) {
     // Get user input from Web UI
     msg = user.call(msg).block();
-    
+
     if (msg == null || "exit".equalsIgnoreCase(msg.getTextContent())) {
         break;
     }
-    
+
     // Agent processes
     msg = agent.call(msg).block();
 }
@@ -4988,7 +5153,7 @@ while (true) {
 
 ---
 
-## Complete Example
+### Complete Example
 
 ```java
 package io.agentscope.examples;
@@ -5001,12 +5166,12 @@ import io.agentscope.core.studio.StudioMessageHook;
 import io.agentscope.core.studio.StudioUserAgent;
 
 public class StudioExample {
-    
+
     public static void main(String[] args) throws Exception {
         String apiKey = System.getenv("DASHSCOPE_API_KEY");
-        
+
         System.out.println("Connecting to Studio at http://localhost:3000...");
-        
+
         // Initialize Studio
         StudioManager.init()
             .studioUrl("http://localhost:3000")
@@ -5015,7 +5180,7 @@ public class StudioExample {
             .initialize()
             .block();
         System.out.println("Connected to Studio\n");
-        
+
         try {
             // Create Agent (with Studio Hook)
             ReActAgent agent = ReActAgent.builder()
@@ -5027,39 +5192,39 @@ public class StudioExample {
                     .build())
                 .hook(new StudioMessageHook(StudioManager.getClient()))
                 .build();
-            
+
             // Create user Agent
             StudioUserAgent user = StudioUserAgent.builder()
                 .name("User")
                 .studioClient(StudioManager.getClient())
                 .webSocketClient(StudioManager.getWebSocketClient())
                 .build();
-            
+
             // Conversation loop
             System.out.println("Starting conversation (type 'exit' to quit)");
             System.out.println("Open http://localhost:3000 to interact\n");
-            
+
             Msg msg = null;
             int turn = 1;
             while (true) {
                 System.out.println("[Turn " + turn + "] Waiting for user input...");
                 msg = user.call(msg).block();
-                
+
                 if (msg == null || "exit".equalsIgnoreCase(msg.getTextContent())) {
                     System.out.println("\nConversation ended");
                     break;
                 }
-                
+
                 System.out.println("[Turn " + turn + "] User: " + msg.getTextContent());
                 msg = agent.call(msg).block();
-                
+
                 if (msg != null) {
-                    System.out.println("[Turn " + turn + "] Agent: " 
+                    System.out.println("[Turn " + turn + "] Agent: "
                         + msg.getTextContent() + "\n");
                 }
                 turn++;
             }
-            
+
         } finally {
             System.out.println("\nShutting down...");
             StudioManager.shutdown();
@@ -5071,9 +5236,9 @@ public class StudioExample {
 
 ---
 
-## Advanced Usage
+### Advanced Usage
 
-### Manual Message Pushing
+#### Manual Message Pushing
 
 ```java
 StudioClient client = StudioManager.getClient();
@@ -5086,7 +5251,7 @@ Msg customMsg = Msg.builder()
 client.pushMessage(customMsg).block();
 ```
 
-### Multi-Agent Visualization
+#### Multi-Agent Visualization
 
 ```java
 // Add Hook to each Agent
@@ -5102,14 +5267,101 @@ ReActAgent agent2 = ReActAgent.builder()
 
 // Studio will display messages from both Agents separately
 ```
+
+---
+
+## OpenTelemetry Tracing
+
+AgentScope Java integrates with OpenTelemetry to provide distributed tracing for agent execution. You can export traces to any platform that supports the OTLP protocol, such as Langfuse.
+
+### Quick Start
+
+Use `TelemetryTracer` and register it via `TracerRegistry` to enable automatic tracing for all agent calls, model calls, and tool executions:
+
+```java
+import io.agentscope.core.tracing.TracerRegistry;
+import io.agentscope.core.tracing.telemetry.TelemetryTracer;
+
+// Register a TelemetryTracer with an OTLP endpoint
+TracerRegistry.register(
+    TelemetryTracer.builder()
+        .endpoint("https://your-otlp-endpoint/v1/traces")
+        .build()
+);
+
+// After registration, all agent activities are automatically traced
+ReActAgent agent = ReActAgent.builder()
+    .name("Assistant")
+    .model(model)
+    .build();
+```
+
+Once registered, the tracer automatically captures:
+- **Agent calls** — span for each `agent.call()`
+- **Model calls** — span for each LLM invocation
+- **Tool executions** — span for each tool call
+- **Formatting** — span for message formatting
+
+No additional code is needed — tracing is applied globally.
+
+### Configuration
+
+`TelemetryTracer` supports the following builder options:
+
+| Option         | Description                                       | Default |
+|----------------|---------------------------------------------------|---------|
+| `endpoint`     | OTLP endpoint URL                                 | —       |
+| `addHeader`    | Add a single HTTP header (e.g., for auth)         | —       |
+| `headers`      | Set all HTTP headers as a `Map`                   | —       |
+| `enabled`      | Enable or disable tracing                         | `true`  |
+| `tracer`       | Use a custom OpenTelemetry `Tracer` instance      | —       |
+
+### Integration with Langfuse
+
+[Langfuse](https://langfuse.com/) is an open-source observability platform that supports the OpenTelemetry protocol. You can send traces to Langfuse Cloud or a self-hosted instance.
+
+```java
+import io.agentscope.core.tracing.TracerRegistry;
+import io.agentscope.core.tracing.telemetry.TelemetryTracer;
+import java.util.Base64;
+
+// Encode your Langfuse API key as Base64
+String publicKey = "pk-lf-xxxxxxxx";
+String secretKey = "sk-lf-xxxxxxxx";
+String encoded = Base64.getEncoder().encodeToString((publicKey + ":" + secretKey).getBytes());
+
+TracerRegistry.register(
+    TelemetryTracer.builder()
+        .endpoint("https://cloud.langfuse.com/api/public/otel/v1/traces")
+        .addHeader("Authorization", "Basic " + encoded)
+        .addHeader("x-langfuse-ingestion-version", "4")
+        .build()
+);
+```
+
+> **Note**: The `x-langfuse-ingestion-version` header is required by Langfuse when using the OTLP endpoint. Make sure to include it.
+
+After running your agent, you can view the traces in the Langfuse dashboard, including the full call chain, latency, and input/output of each step.
+
+### Integration with Other OTLP Backends
+
+Any platform that supports the OTLP protocol can be used. For example, to send traces to a local Jaeger instance:
+
+```java
+TracerRegistry.register(
+    TelemetryTracer.builder()
+        .endpoint("http://localhost:4317")
+        .build()
+);
+```
+
 ---
 
 ## More Resources
 
-- **Complete Example**: [StudioExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/advanced/src/main/java/io/agentscope/examples/advanced/StudioExample.java)
+- **Studio Example**: [StudioExample.java](https://github.com/agentscope-ai/agentscope-java/blob/main/agentscope-examples/advanced/src/main/java/io/agentscope/examples/advanced/StudioExample.java)
 - **Studio Repository**: https://github.com/agentscope-ai/agentscope-studio
 - **Hook Documentation**: [hook.md](./hook.md)
-
 
 
 # AG-UI Protocol Integration
@@ -5444,8 +5696,8 @@ ConfigurableAgentCard agentCard = new ConfigurableAgentCard.Builder()
     .description("Intelligent assistant")
     .version("1.0.0")
     .skills(List.of(
-        new AgentSkill("text-generation", "Text Generation"),
-        new AgentSkill("question-answering", "Q&A")))
+        AgentSkill.builder().name("text-generation").description("Text Generation").skillContent("").build(),
+        AgentSkill.builder().name("question-answering").description("Q&A").skillContent("").build()))
     .build();
 
 AgentScopeA2aServer.builder(agentBuilder)
@@ -6005,6 +6257,271 @@ Any tool that supports the `llms.txt` standard or can ingest documentation from 
 MCP configurations require [`uv`](https://docs.astral.sh/uv/) to be installed, as they use `uvx` to run the documentation server.
 
 
+# AgentScope Training Extension
+
+## Overview
+
+### Background
+
+Agent developers typically work with open-source models, using fine-tuning methods such as **SFT (Supervised Fine-Tuning)** and **RFT (Reinforcement Fine-Tuning)** to balance Agent cost, performance, and effectiveness in specific scenarios. This extension helps Agent developers **conveniently and continuously leverage real online interaction data to optimize models and Agents**, establishing a **complete data loop from production to training systems**, enabling **"Agents that get smarter with use"** through online training.
+
+### Online Training
+
+Online Training is a training paradigm that directly utilizes real user interaction data in production or near-production environments to continuously optimize Agent behavior. Unlike traditional Offline Training—which involves collecting historical logs, building static datasets, and training models in isolated environments—online training emphasizes deep coupling with real toolchains and user behavior, achieving a "run, learn, and optimize" closed loop.
+
+#### Key Characteristics
+
+**1. Reuse Production Toolchains**
+
+Agents can directly invoke real tools deployed in production (such as APIs, databases, business systems, etc.) during training, without the need to build simulation environments or write mock tools specifically for training.
+
+**Advantage**: Avoids "training-deployment deviation" (Reality Gap) caused by inconsistencies between mock tools and actual production behavior; significantly reduces integration costs and improves the authenticity and effectiveness of training data.
+
+**2. Support Incremental Learning with Fast Cold Start**
+
+Does not depend on complete historical datasets; Agents can start learning from a small number or even single real interactions, suitable for newly launched Agents or long-tail scenarios, significantly lowering the startup threshold.
+
+#### Constraints
+
+**Safe Support for Read-Only Tools by Default**
+
+Since the training process may involve multiple attempts or replays, directly invoking write-operation tools (such as "place order", "deduct payment", "send message") may cause repeated execution, leading to business risks. Therefore, write operations require additional safeguards through sandbox mechanisms, idempotent design, or manual review. Users need to ensure the safety of the tools used by their Agents.
+
+**Multi-Turn Interaction Scenarios Require Explicit Modeling**
+
+Current mainstream training frameworks natively support single-turn interactions between users and Agents (user asks → Agent responds). In this interaction, Agents can have multiple interactions with LLMs.
+
+For multi-turn dialogues or complex task flows (such as book flight → select seat → payment), developers need to design additional state management, user behavior simulation, or trajectory sampling strategies.
+
+## Architecture
+
+This solution uses Trinity-RFT as the training backend. Trinity-RFT is a general-purpose, flexible, and user-friendly Large Language Model (LLM) Reinforcement Fine-Tuning (RFT) framework.
+
+Github: https://github.com/agentscope-ai/Trinity-RFT
+
+Version requirement: v0.4.0 and above
+
+The online training mode decouples three components: Agent Runner, inference service (Explorer), and training service (Trainer):
+![Online-Training Architecture](../../imgs/training.svg)
+- Agent Runner is responsible for running user Agent applications, processing user requests, and interacting with Explorer through RESTful APIs. This component is implemented, deployed, and managed by users themselves, with no constraints from Trinity-RFT.
+- Explorer serves as the inference service, processing requests from Agent Runner, recording trainable data (Experience), and storing data in the database. Explorer provides the following RESTful interfaces for Agent Runner to call:
+  - chat: Compatible with standard OpenAI chat completions interface, handling user dialogue requests.
+  - feedback: Receives user feedback on Agent responses.
+  - commit: Notifies Explorer to submit data to Trainer.
+- Trainer serves as the training service, retrieving new training data from the database, training the model, and storing updated model checkpoints in a shared file system for Explorer to use.
+
+Agent Runner, Explorer, and Trainer can be deployed on different servers. Among them, Agent Runner is managed by users themselves, only requiring network connectivity with Explorer and no GPU resources. Explorer and Trainer need to be deployed on GPU servers through Trinity-RFT and must ensure both can access the same shared file system so that model checkpoints saved by Trainer can be read by Explorer.
+
+### Core Features
+
+This solution provides **end-to-end online training** support natively in AgentScope Java, aiming to establish a complete loop from production to model optimization with the following goals:
+
+- **Leverage Real Online Interaction Data**: Agent developers can directly train using real request invocations and tool states from production Agent environments
+- **Minimal Setup Experience**: Agent developers only need to provide key training configurations (such as reward functions in RL) to automatically complete execution, data collection, and the entire training process
+- **Unified Training Interface Covering Mainstream Optimization Methods**: Native support for supervised fine-tuning (**SFT**), knowledge distillation, and task-specific reinforcement learning algorithms (such as **PPO**), without needing to switch frameworks or depend on other ecosystems
+ 
+---
+
+## Quick Start
+
+### Maven Dependency
+
+```xml
+<dependency>
+    <groupId>io.agentscope</groupId>
+    <artifactId>agentscope-extensions-training</artifactId>
+    <version>${agentscope.version}</version>
+</dependency>
+```
+### Define Request Selection Logic
+
+Request selection logic is used to filter out requests that need to be used for training.
+
+#### Built-in Strategies:
+
+**SamplingRateStrategy** - Random sampling. All online requests are filtered by percentage.
+```java
+TrainingSelectionStrategy strategy = SamplingRateStrategy.of(0.1);  // 10%
+```
+
+**ExplicitMarkingStrategy** - Users explicitly mark important requests
+```java
+TrainingSelectionStrategy strategy = ExplicitMarkingStrategy.create();
+
+// In your application code, explicitly mark requests for training
+TrainingContext.mark("high-quality", "user-feedback");
+agent.call(msg).block();  // This request will be used for training
+```
+#### Custom Strategy
+You can implement the TrainingSelectionStrategy interface by referring to SamplingRateStrategy or ExplicitMarkingStrategy, and customize your request filtering logic in the shouldSelect method according to your business needs.
+
+### Define Reward Function
+You can implement the RewardCalculator interface and customize your reward calculation logic in the calculate method according to your business needs. Generally, rewards are decimals between 0 and 1.
+### Start Training Backend
+
+#### Install Trinity
+
+Before installation, ensure your system meets the following requirements. Source installation is recommended:
+
+- **Python**: Version 3.10 to 3.12 (inclusive)
+- **CUDA**: Version >= 12.8
+- **GPU**: At least 2 GPUs
+
+```bash
+git clone https://github.com/agentscope-ai/Trinity-RFT
+cd Trinity-RFT
+pip install -e ".[dev]"
+pip install flash-attn==2.8.1
+```
+#### Configure Training Settings
+##### Write Explorer Service Configuration
+```yaml
+mode: serve  # set to 'serve' for online inference service
+project: test  # set your project name
+name: test  # set your experiment name
+checkpoint_root_dir: CHECKPOINT_ROOT_DIR  # set the root directory for checkpoints, must be an absolute path, and should be on a shared filesystem
+model:
+  model_path:  /path/to/your/model # set the path to your base model
+  max_model_len:  8192
+  max_response_tokens: 2048
+  temperature: 0.7
+algorithm:
+  algorithm_type: "ppo"  # current version only supports ppo for online training (group is not supported yet)
+cluster:
+    node_num: 1
+    gpu_per_node: 4  # suppose you have 4 GPUs on the node
+explorer:
+  rollout_model:
+    engine_num: 2
+    tensor_parallel_size: 2  # make sure tensor_parallel_size * engine_num <= node_num * gpu_per_node
+    enable_openai_api: true
+    enable_history: true
+    enable_auto_tool_choice: true
+    tool_call_parser: hermes
+    # reasoning_parser: deepseek_r1  # if using Qwen3 series models, uncomment this line
+    dtype: bfloat16
+    seed: 42
+  service_status_check_interval: 10  # check new checkpoints and update data every 10 seconds
+  proxy_port: 8010  # set the port for Explorer service
+# trainer:
+#   save_interval: 1  # save checkpoint every step
+#   ulysses_sequence_parallel_size: 2  # set according to your model and hardware
+buffer:
+  train_batch_size: 16 
+  trainer_input:
+    experience_buffer:
+      name: exp_buffer  # table name in the database
+      storage_type: sql
+      # path: your_db_url  # if not provided, use a sqlite database in checkpoint_root_dir/project/name/buffer
+synchronizer:
+  sync_method: checkpoint
+  sync_interval: 1
+monitor:
+  monitor_type: tensorboard
+```
+##### Write Trainer Service Configuration
+```yaml
+mode: train  # set to 'train' for training service
+project: test  # set your project name, must be the same as in Explorer
+name: test  # set your experiment name, must be the same as in Explorer
+checkpoint_root_dir: CHECKPOINT_ROOT_DIR  # set the root directory for checkpoints, must be the same as in Explorer
+model:
+  model_path: /path/to/your/model # set the path to your base model, must be the same as in Explorer
+  max_model_len:  8192  # must be the same as in Explorer
+  max_response_tokens: 2048  # must be the same as in Explorer
+  temperature: 0.7  # must be the same as in Explorer
+algorithm:
+  algorithm_type: "ppo"  # current version only supports ppo for online training (group is not supported yet)
+cluster:
+    node_num: 1
+    gpu_per_node: 4  # suppose you have 4 GPUs on the node
+buffer:
+  train_batch_size: 32        # trainer consumes 16 samples per step
+  trainer_input:
+    experience_buffer:
+      name: exp_buffer  # table name in the database, must be the same as in Explorer
+      storage_type: sql
+      # path: your_db_url  # if not provided, use a sqlite database in checkpoint_root_dir/project/name/buffer
+trainer:
+  save_interval: 16  # save checkpoint every step
+  ulysses_sequence_parallel_size: 1  # set according to your model and hardware
+  save_hf_checkpoint: always
+  max_checkpoints_to_keep: 5
+  trainer_config:
+    trainer:
+        balance_batch: false
+        max_actor_ckpt_to_keep: 5
+        max_critic_ckpt_to_keep: 5
+synchronizer:
+  sync_method: checkpoint
+  sync_interval: 1
+    
+monitor:
+  monitor_type: tensorboard
+```
+
+#### Start Training Backend Environment
+Before starting Explorer and Trainer services, you need to start the Ray cluster
+```bash
+ray start --head
+```
+Start Explorer and Trainer services separately.
+
+```bash
+trinity run --config explorer.yaml
+trinity run --config trainer.yaml
+```
+After starting the Explorer service, the service address will be printed in the log, typically on port 8010
+### Configure Online Training and Start Agent
+
+#### Configuration Options
+
+```java
+TrainingRunner trainingRunner = TrainingRunner.builder()
+        .trinityEndpoint(TRINITY_ENDPOINT) // Trinity Explorer service address
+        .modelName(TRAINING_MODEL_NAME)    // Corresponds to model_path in Trinity configuration
+        .selectionStrategy(new CustomStrategy())
+        .rewardCalculator(new CustomReward())
+        .commitIntervalSeconds(60*5)
+        .repeatTime(1)
+        .build();
+trainingRunner.start();
+```
+
+#### Complete Example
+
+```java
+import io.agentscope.core.training.runner.TrainingRunner;
+import io.agentscope.core.training.strategy.SamplingRateStrategy;
+
+// 1. Start training runner (no Task ID/Run ID needed!)
+TrainingRunner runner = TrainingRunner.builder()
+        .trinityEndpoint("http://trinity-backend:8010")
+        .modelName("/path/to/qwen-model")  
+        .selectionStrategy(SamplingRateStrategy.of(0.1))  // 10% sampling
+        .rewardCalculator(agent -> 0.0)  // Custom reward calculation logic
+        .commitIntervalSeconds(300)  // Commit every 5 minutes
+        .build();
+
+runner.start();
+
+// 2. Use your Agent normally - training happens transparently!
+ReActAgent agent = ReActAgent.builder()
+        .name("ProductionAgent")
+        .model(gpt4Model)  // Production model (GPT-4)
+        .tools(tools)
+        .build();
+
+// User requests are processed normally (using GPT-4), 10% automatically sampled for training
+Msg response = agent.call(Msg.builder().textContent("Search for Python tutorials").build()).block();
+
+// 3. Stop when training is complete
+runner.stop();
+```
+
+---
+
+
 # Multi-Agent Overview
 
 Multi-agent systems coordinate specialized agents or components to handle complex workflows. Not every complex task needs multiple agents—a single agent with the right tools and prompt can often suffice. This page summarizes when multi-agent patterns help and which patterns the project supports.
@@ -6558,9 +7075,9 @@ START → list_tables → call_get_schema → get_schema → generate_query → 
 
 **Configuration**:
 
-- `workflow.rag.enabled` – Enable RAG workflow beans.
-- `workflow.sql.enabled` – Enable SQL workflow beans.
-- `workflow.runner.enabled` – When `true`, run a one-shot demo on startup (use with one of the above).
+- `workflow.rag.enabled` – Enable RAG workflow beans (default `false`).
+- `workflow.sql.enabled` – Enable SQL workflow beans (default `true` in example).
+- `workflow.runner.enabled` – When `true`, run a one-shot demo on startup (default `true` in example; use with one of the above).
 - **DashScope API key**: `AI_DASHSCOPE_API_KEY` or `spring.ai.dashscope.api-key` (required for RAG and SQL; RAG also needs an embedding model).
 
 ## Custom workflow vs other patterns
@@ -7113,7 +7630,7 @@ Register each tool on the corresponding agent’s Toolkit via `toolkit.registerT
 Create a sales and a support agent as `AgentScopeAgent`, each with its own ReActAgent, system prompt, and Toolkit that includes the appropriate handoff tool.
 
 ```java
-import com.alibaba.cloud.ai.graph.agent.agentscope.AgentScopeAgent;
+import com.alibaba.cloud.ai.agent.agentscope.AgentScopeAgent;
 import io.agentscope.core.ReActAgent;
 import io.agentscope.core.memory.InMemoryMemory;
 import io.agentscope.core.model.DashScopeChatModel;
@@ -7137,6 +7654,7 @@ ReActAgent.Builder salesReActBuilder = ReActAgent.builder()
 
 AgentScopeAgent salesAgent = AgentScopeAgent.fromBuilder(salesReActBuilder)
         .name(AgentScopeStateConstants.SALES_AGENT)
+        .description("Sales agent for pricing, product availability, and sales inquiries")
         .instruction("please assist the customer with their sales inquiry: {input}.")
         .includeContents(true)
         .returnReasoningContents(true)
@@ -7160,6 +7678,7 @@ ReActAgent.Builder supportReActBuilder = ReActAgent.builder()
 
 AgentScopeAgent supportAgent = AgentScopeAgent.fromBuilder(supportReActBuilder)
         .name(AgentScopeStateConstants.SUPPORT_AGENT)
+        .description("Support agent for technical issues and troubleshooting")
         .instruction("please assist the customer with their product technical inquiry: {input}.")
         .includeContents(true)
         .returnReasoningContents(true)
