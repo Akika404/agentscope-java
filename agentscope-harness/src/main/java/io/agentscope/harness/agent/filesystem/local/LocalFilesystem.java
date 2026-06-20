@@ -236,7 +236,15 @@ public class LocalFilesystem implements AbstractFilesystem {
 
     @Override
     public LsResult ls(RuntimeContext runtimeContext, String path) {
-        Path dirPath = resolvePath(runtimeContext, path);
+        // Mirror glob()'s root handling: when a namespace is active, listing "/" (or null) must
+        // anchor under the namespace folder rather than the raw cwd, otherwise the namespace
+        // prefix leaks into results and namespaced files are not listed at the root.
+        Path dirPath;
+        if ((path == null || path.isBlank() || "/".equals(path)) && hasNamespace(runtimeContext)) {
+            dirPath = resolvePath(runtimeContext, ".");
+        } else {
+            dirPath = resolvePath(runtimeContext, path);
+        }
         if (!Files.exists(dirPath) || !Files.isDirectory(dirPath)) {
             return LsResult.success(List.of());
         }
@@ -583,7 +591,7 @@ public class LocalFilesystem implements AbstractFilesystem {
 
     // ==================== Path resolution ====================
 
-    protected NamespaceFactory getNamespaceFactory() {
+    public NamespaceFactory getNamespaceFactory() {
         return namespaceFactory;
     }
 

@@ -24,8 +24,12 @@ import io.agentscope.harness.agent.filesystem.local.LocalFilesystem;
 import io.agentscope.harness.agent.filesystem.local.LocalFilesystemWithShell;
 import io.agentscope.harness.agent.filesystem.model.EditResult;
 import io.agentscope.harness.agent.filesystem.model.FileUploadResponse;
+import io.agentscope.harness.agent.filesystem.model.GlobResult;
+import io.agentscope.harness.agent.filesystem.model.GrepResult;
+import io.agentscope.harness.agent.filesystem.model.LsResult;
 import io.agentscope.harness.agent.filesystem.model.ReadResult;
 import io.agentscope.harness.agent.filesystem.model.WriteResult;
+import io.agentscope.harness.agent.filesystem.remote.store.NamespaceFactory;
 import io.agentscope.harness.agent.filesystem.sandbox.AbstractSandboxFilesystem;
 import io.agentscope.harness.agent.workspace.LocalFsMode;
 import io.agentscope.harness.agent.workspace.PathPolicy;
@@ -239,5 +243,197 @@ class ProjectAwareOverlayTest {
         var r = overlay.execute(rc, "echo hello", 10);
         assertTrue(r.output().contains("hello"));
         assertEquals(0, r.exitCode());
+    }
+
+    // ==================== Namespace-scoped read/write symmetry (regression) ====================
+    //
+    // When a NamespaceFactory is active (e.g. IsolationScope.USER -> [userId]), projectWritable
+    // writes land under <project>/<userId>/. Reads, listings and searches must resolve the same
+    // namespaced location so a file written as "hi.txt" is readable back as "hi.txt" — they used
+    // to fall through to the non-namespaced lower layer and miss it (caller had to pass
+    // "<userId>/hi.txt").
+
+    private static final NamespaceFactory USER_NS = runtimeContext -> List.of("u1");
+
+    private ProjectAwareOverlay namespacedOverlay() {
+        PathPolicy policy = PathPolicy.of(project, workspace);
+        LocalFilesystemWithShell upper =
+                new LocalFilesystemWithShell(
+                        workspace,
+                        LocalFsMode.ROOTED,
+                        policy,
+                        120,
+                        100_000,
+                        null,
+                        false,
+                        USER_NS,
+                        project);
+        // Mirrors LocalFilesystemSpec.toFilesystem: lower is non-namespaced (raw project tree),
+        // projectFs is namespace-scoped (where projectWritable writes go).
+        LocalFilesystem lower = new LocalFilesystem(project, true, 10, null);
+        LocalFilesystem projectFs =
+                new LocalFilesystem(project, LocalFsMode.ROOTED, policy, 10, USER_NS);
+        return new ProjectAwareOverlay(
+                (AbstractSandboxFilesystem) upper, lower, projectFs, workspace);
+    }
+
+    @Test
+    void namespacedWrite_isReadableBackUnderSamePath() {
+        ProjectAwareOverlay ns = namespacedOverlay();
+
+        WriteResult w = ns.write(rc, "hi.txt", "hello");
+        assertTrue(w.isSuccess(), () -> "write failed: " + w.error());
+        // Stored namespace-scoped on disk.
+        assertTrue(
+                Files.exists(project.resolve("u1/hi.txt")),
+                "namespaced write should land under <project>/u1/");
+        assertFalse(Files.exists(project.resolve("hi.txt")));
+
+        // The reported bug: this read used to fail because it fell through to the non-namespaced
+        // lower layer looking at <project>/hi.txt.
+        ReadResult r = ns.read(rc, "hi.txt", 0, 0);
+        assertTrue(r.isSuccess(), () -> "read failed: " + r.error());
+        assertEquals("hello", r.fileData().content());
+
+        assertTrue(ns.exists(rc, "hi.txt"));
+    }
+
+    @Test
+    void namespacedWrite_visibleInRootListing() {
+        ProjectAwareOverlay ns = namespacedOverlay();
+        ns.write(rc, "hi.txt", "hello");
+
+        for (String dir : List.of("/", ".", "")) {
+            LsResult ls = ns.ls(rc, dir);
+            assertTrue(ls.isSuccess(), () -> "ls failed for " + dir);
+            List<String> paths = ls.entries().stream().map(fi -> fi.path()).toList();
+            assertTrue(
+                    paths.stream().anyMatch(p -> p.equals("hi.txt")),
+                    () -> "ls(" + dir + ") missing hi.txt: " + paths);
+            // The namespace folder must not leak through the non-namespaced lower layer.
+            assertTrue(
+                    paths.stream().noneMatch(ProjectAwareOverlayTest::mentionsNamespaceDir),
+                    () -> "ls(" + dir + ") leaked namespace prefix: " + paths);
+        }
+    }
+
+    @Test
+    void namespacedWrite_foundByGlobAndGrep() {
+        ProjectAwareOverlay ns = namespacedOverlay();
+        ns.write(rc, "hi.txt", "the needle is here");
+
+        GlobResult g = ns.glob(rc, "**/*.txt", "/");
+        assertTrue(g.isSuccess());
+        List<String> globPaths = g.matches().stream().map(fi -> fi.path()).toList();
+        assertTrue(
+                globPaths.stream().anyMatch(p -> p.equals("hi.txt")),
+                () -> "glob missing hi.txt: " + globPaths);
+        assertTrue(
+                globPaths.stream().noneMatch(ProjectAwareOverlayTest::mentionsNamespaceDir),
+                () -> "glob leaked namespace prefix: " + globPaths);
+
+        GrepResult gr = ns.grep(rc, "needle", ".", null);
+        assertTrue(gr.isSuccess());
+        List<String> grepPaths = gr.matches().stream().map(m -> m.path()).toList();
+        assertTrue(
+                grepPaths.stream().anyMatch(p -> p.equals("hi.txt")),
+                () -> "grep missing hi.txt: " + grepPaths);
+        assertTrue(
+                grepPaths.stream().noneMatch(ProjectAwareOverlayTest::mentionsNamespaceDir),
+                () -> "grep leaked namespace prefix: " + grepPaths);
+    }
+
+    /** True if a listing/search path exposes the raw {@code u1/} namespace folder. */
+    private static boolean mentionsNamespaceDir(String path) {
+        String p = path.replace('\\', '/');
+        while (p.startsWith("/")) {
+            p = p.substring(1);
+        }
+        return p.equals("u1") || p.equals("u1/") || p.startsWith("u1/");
+    }
+
+    @Test
+    void namespaced_originalProjectTreeStillReadable() throws IOException {
+        ProjectAwareOverlay ns = namespacedOverlay();
+        // Pre-existing, non-namespaced file in the raw project tree (e.g. checked-out source).
+        Files.writeString(project.resolve("existing.txt"), "from repo", StandardCharsets.UTF_8);
+
+        ReadResult r = ns.read(rc, "existing.txt", 0, 0);
+        assertTrue(r.isSuccess(), () -> "read failed: " + r.error());
+        assertEquals("from repo", r.fileData().content());
+        assertTrue(ns.exists(rc, "existing.txt"));
+    }
+
+    @Test
+    void namespaced_workspaceWriteStillTakesPrecedenceOnRead() throws IOException {
+        ProjectAwareOverlay ns = namespacedOverlay();
+        // Same relative path present as raw project file and as a workspace (upper) write.
+        Files.writeString(project.resolve("AGENTS.md"), "project version", StandardCharsets.UTF_8);
+        ns.write(rc, "AGENTS.md", "workspace version");
+
+        ReadResult r = ns.read(rc, "AGENTS.md", 0, 0);
+        assertTrue(r.isSuccess());
+        assertEquals("workspace version", r.fileData().content());
+    }
+
+    @Test
+    void namespaced_workspaceMetadataRead_ignoresProjectFsNamespaceDir() throws IOException {
+        ProjectAwareOverlay ns = namespacedOverlay();
+        // A file that coincidentally lives under projectFs's namespace folder and shares a
+        // workspace-metadata name. Writes of "AGENTS.md" always go to the workspace (upper), so
+        // reads of it must NOT be served from projectFs's <project>/u1/ tree.
+        Files.createDirectories(project.resolve("u1"));
+        Files.writeString(
+                project.resolve("u1/AGENTS.md"), "namespaced project copy", StandardCharsets.UTF_8);
+        Files.writeString(
+                project.resolve("AGENTS.md"), "original project copy", StandardCharsets.UTF_8);
+
+        ReadResult r = ns.read(rc, "AGENTS.md", 0, 0);
+        assertTrue(r.isSuccess());
+        assertEquals("original project copy", r.fileData().content());
+    }
+
+    @Test
+    void namespaced_workspaceMetadataSearches_ignoreProjectFsNamespaceDir() throws IOException {
+        ProjectAwareOverlay ns = namespacedOverlay();
+        Files.createDirectories(project.resolve("u1/skills/demo"));
+        Files.writeString(
+                project.resolve("u1/skills/demo/SKILL.md"),
+                "namespaced project skill",
+                StandardCharsets.UTF_8);
+        Files.createDirectories(project.resolve("skills/original"));
+        Files.writeString(
+                project.resolve("skills/original/SKILL.md"),
+                "original project skill",
+                StandardCharsets.UTF_8);
+
+        LsResult ls = ns.ls(rc, "skills");
+        assertTrue(ls.isSuccess());
+        List<String> lsPaths =
+                ls.entries().stream().map(fi -> stripLeadingSlash(fi.path())).toList();
+        assertTrue(lsPaths.stream().anyMatch(p -> p.equals("skills/original/")));
+        assertTrue(lsPaths.stream().noneMatch(p -> p.equals("skills/demo/")));
+
+        GlobResult glob = ns.glob(rc, "**/SKILL.md", "skills");
+        assertTrue(glob.isSuccess());
+        List<String> globPaths =
+                glob.matches().stream().map(fi -> stripLeadingSlash(fi.path())).toList();
+        assertTrue(globPaths.stream().anyMatch(p -> p.equals("skills/original/SKILL.md")));
+        assertTrue(globPaths.stream().noneMatch(p -> p.equals("skills/demo/SKILL.md")));
+
+        GrepResult grep = ns.grep(rc, "skill", "skills", null);
+        assertTrue(grep.isSuccess());
+        List<String> grepPaths =
+                grep.matches().stream().map(m -> stripLeadingSlash(m.path())).toList();
+        assertTrue(grepPaths.stream().anyMatch(p -> p.equals("skills/original/SKILL.md")));
+        assertTrue(grepPaths.stream().noneMatch(p -> p.equals("skills/demo/SKILL.md")));
+    }
+
+    private static String stripLeadingSlash(String path) {
+        String p = path.replace('\\', '/');
+        while (p.startsWith("/")) {
+            p = p.substring(1);
+        }
+        return p;
     }
 }

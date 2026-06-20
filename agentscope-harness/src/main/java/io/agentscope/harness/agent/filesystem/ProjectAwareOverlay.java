@@ -19,11 +19,19 @@ import io.agentscope.core.agent.RuntimeContext;
 import io.agentscope.harness.agent.filesystem.local.LocalFilesystem;
 import io.agentscope.harness.agent.filesystem.model.EditResult;
 import io.agentscope.harness.agent.filesystem.model.ExecuteResponse;
+import io.agentscope.harness.agent.filesystem.model.FileDownloadResponse;
+import io.agentscope.harness.agent.filesystem.model.FileInfo;
 import io.agentscope.harness.agent.filesystem.model.FileUploadResponse;
+import io.agentscope.harness.agent.filesystem.model.GlobResult;
+import io.agentscope.harness.agent.filesystem.model.GrepMatch;
+import io.agentscope.harness.agent.filesystem.model.GrepResult;
+import io.agentscope.harness.agent.filesystem.model.LsResult;
+import io.agentscope.harness.agent.filesystem.model.ReadResult;
 import io.agentscope.harness.agent.filesystem.model.WriteResult;
 import io.agentscope.harness.agent.filesystem.sandbox.AbstractSandboxFilesystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,8 +44,15 @@ import java.util.Set;
  * when {@code projectWritable(true)} is set. Other filesystem specs ({@code RemoteFilesystemSpec},
  * {@code SandboxFilesystemSpec}) are not affected.
  *
- * <p>Read operations retain standard overlay semantics: check upper (workspace) first, fall back
- * to lower (project). Shell {@code execute()} delegates to the upper layer as before.
+ * <p>Read operations are symmetric with writes. Workspace-metadata paths keep standard overlay
+ * semantics (upper → lower) and never consult {@code projectFs}, mirroring their write routing.
+ * Other paths resolve <em>upper (legacy/pre-projectWritable writes) → projectFs (namespace-scoped
+ * project writes) → lower (raw project tree)</em>, so a non-workspace file written as
+ * {@code hi.txt} (stored at {@code <project>/<userId>/hi.txt}) reads back under the same relative
+ * path while pre-existing project files remain visible. Directory listings and searches merge the
+ * layers; entries the non-namespaced {@code lower} layer sees inside projectFs's namespace folder
+ * are dropped so the raw {@code <userId>/} prefix never leaks. Shell {@code execute()} delegates to
+ * the upper layer as before.
  */
 public class ProjectAwareOverlay extends OverlayFilesystem implements AbstractSandboxFilesystem {
 
@@ -147,6 +162,195 @@ public class ProjectAwareOverlay extends OverlayFilesystem implements AbstractSa
             results.addAll(projectFs.uploadFiles(runtimeContext, projectFiles));
         }
         return results;
+    }
+
+    // ==================== Read routing ====================
+    //
+    // OverlayFilesystem only knows about (upper, lower); its read-family operations would miss
+    // files written through projectFs, which is namespace-scoped. We override them here so reads
+    // stay symmetric with write routing:
+    //   - workspace-metadata paths: upper -> lower (projectFs is never a write target for them,
+    //     so it must not participate in their read precedence either);
+    //   - everything else: upper (legacy, pre-projectWritable writes) -> projectFs -> lower.
+    // For directory listings and searches the layers are merged; entries the non-namespaced
+    // {@code lower} sees inside projectFs's namespace folder (e.g. {@code u1/hi.txt}) are dropped,
+    // since projectFs already surfaces them de-namespaced and the raw prefix must not leak.
+
+    @Override
+    public ReadResult read(RuntimeContext runtimeContext, String filePath, int offset, int limit) {
+        if (isWorkspacePath(filePath)) {
+            return super.read(runtimeContext, filePath, offset, limit);
+        }
+        if (upper().exists(runtimeContext, filePath)) {
+            return upper().read(runtimeContext, filePath, offset, limit);
+        }
+        if (projectFs.exists(runtimeContext, filePath)) {
+            return projectFs.read(runtimeContext, filePath, offset, limit);
+        }
+        return lower().read(runtimeContext, filePath, offset, limit);
+    }
+
+    @Override
+    public boolean exists(RuntimeContext runtimeContext, String path) {
+        if (isWorkspacePath(path)) {
+            return super.exists(runtimeContext, path);
+        }
+        return upper().exists(runtimeContext, path)
+                || projectFs.exists(runtimeContext, path)
+                || lower().exists(runtimeContext, path);
+    }
+
+    @Override
+    public LsResult ls(RuntimeContext runtimeContext, String path) {
+        if (isWorkspaceQueryPath(path)) {
+            return super.ls(runtimeContext, path);
+        }
+        LsResult lowerResult = lower().ls(runtimeContext, path);
+        LsResult projectResult = projectFs.ls(runtimeContext, path);
+        LsResult upperResult = upper().ls(runtimeContext, path);
+
+        if (!lowerResult.isSuccess() && !projectResult.isSuccess() && !upperResult.isSuccess()) {
+            return upperResult;
+        }
+
+        // Merge with increasing precedence: raw project tree (minus projectFs's namespace folder),
+        // then namespaced project writes, then workspace entries override on path collision.
+        List<String> ns = namespace(runtimeContext);
+        Map<String, FileInfo> merged = new LinkedHashMap<>();
+        mergeEntries(merged, lowerResult, ns);
+        mergeEntries(merged, projectResult, List.of());
+        mergeEntries(merged, upperResult, List.of());
+        return LsResult.success(new ArrayList<>(merged.values()));
+    }
+
+    @Override
+    public GrepResult grep(
+            RuntimeContext runtimeContext, String pattern, String path, String glob) {
+        if (isWorkspaceQueryPath(path)) {
+            return super.grep(runtimeContext, pattern, path, glob);
+        }
+        GrepResult lowerResult = lower().grep(runtimeContext, pattern, path, glob);
+        GrepResult projectResult = projectFs.grep(runtimeContext, pattern, path, glob);
+        GrepResult upperResult = upper().grep(runtimeContext, pattern, path, glob);
+
+        if (!lowerResult.isSuccess() && !projectResult.isSuccess() && !upperResult.isSuccess()) {
+            return upperResult;
+        }
+
+        List<String> ns = namespace(runtimeContext);
+        Map<String, GrepMatch> merged = new LinkedHashMap<>();
+        mergeMatches(merged, lowerResult, ns);
+        mergeMatches(merged, projectResult, List.of());
+        mergeMatches(merged, upperResult, List.of());
+        return GrepResult.success(new ArrayList<>(merged.values()));
+    }
+
+    @Override
+    public GlobResult glob(RuntimeContext runtimeContext, String pattern, String path) {
+        if (isWorkspaceQueryPath(path)) {
+            return super.glob(runtimeContext, pattern, path);
+        }
+        GlobResult lowerResult = lower().glob(runtimeContext, pattern, path);
+        GlobResult projectResult = projectFs.glob(runtimeContext, pattern, path);
+        GlobResult upperResult = upper().glob(runtimeContext, pattern, path);
+
+        if (!lowerResult.isSuccess() && !projectResult.isSuccess() && !upperResult.isSuccess()) {
+            return upperResult;
+        }
+
+        List<String> ns = namespace(runtimeContext);
+        Map<String, FileInfo> merged = new LinkedHashMap<>();
+        mergeGlobMatches(merged, lowerResult, ns);
+        mergeGlobMatches(merged, projectResult, List.of());
+        mergeGlobMatches(merged, upperResult, List.of());
+        return GlobResult.success(new ArrayList<>(merged.values()));
+    }
+
+    @Override
+    public List<FileDownloadResponse> downloadFiles(
+            RuntimeContext runtimeContext, List<String> paths) {
+        List<FileDownloadResponse> results = new ArrayList<>();
+        for (String path : paths) {
+            if (isWorkspacePath(path)) {
+                results.addAll(super.downloadFiles(runtimeContext, List.of(path)));
+            } else if (upper().exists(runtimeContext, path)) {
+                results.addAll(upper().downloadFiles(runtimeContext, List.of(path)));
+            } else if (projectFs.exists(runtimeContext, path)) {
+                results.addAll(projectFs.downloadFiles(runtimeContext, List.of(path)));
+            } else {
+                results.addAll(lower().downloadFiles(runtimeContext, List.of(path)));
+            }
+        }
+        return results;
+    }
+
+    /** Active namespace tuple for {@code projectFs} (empty when no namespace is configured). */
+    private List<String> namespace(RuntimeContext runtimeContext) {
+        if (projectFs.getNamespaceFactory() == null) {
+            return List.of();
+        }
+        List<String> ns = projectFs.getNamespaceFactory().getNamespace(runtimeContext);
+        return ns != null ? ns : List.of();
+    }
+
+    /**
+     * True when {@code path} falls inside projectFs's namespace folder (e.g. {@code u1} or
+     * {@code u1/hi.txt}). Such entries are projectFs's domain and must not leak through the raw,
+     * non-namespaced {@code lower} layer with their prefix exposed.
+     */
+    private static boolean isUnderNamespace(String path, List<String> ns) {
+        if (ns.isEmpty() || path == null) {
+            return false;
+        }
+        String prefix = String.join("/", ns);
+        String p = path.replace('\\', '/');
+        while (p.startsWith("/")) {
+            p = p.substring(1);
+        }
+        while (p.endsWith("/")) {
+            p = p.substring(0, p.length() - 1);
+        }
+        return p.equals(prefix) || p.startsWith(prefix + "/");
+    }
+
+    private static void mergeEntries(
+            Map<String, FileInfo> merged, LsResult result, List<String> nsToDrop) {
+        if (result.isSuccess() && result.entries() != null) {
+            for (FileInfo fi : result.entries()) {
+                if (isUnderNamespace(fi.path(), nsToDrop)) {
+                    continue;
+                }
+                merged.put(fi.path(), fi);
+            }
+        }
+    }
+
+    private static void mergeGlobMatches(
+            Map<String, FileInfo> merged, GlobResult result, List<String> nsToDrop) {
+        if (result.isSuccess() && result.matches() != null) {
+            for (FileInfo fi : result.matches()) {
+                if (isUnderNamespace(fi.path(), nsToDrop)) {
+                    continue;
+                }
+                merged.put(fi.path(), fi);
+            }
+        }
+    }
+
+    private static void mergeMatches(
+            Map<String, GrepMatch> merged, GrepResult result, List<String> nsToDrop) {
+        if (result.isSuccess() && result.matches() != null) {
+            for (GrepMatch m : result.matches()) {
+                if (isUnderNamespace(m.path(), nsToDrop)) {
+                    continue;
+                }
+                merged.put(m.path() + ":" + m.line(), m);
+            }
+        }
+    }
+
+    private boolean isWorkspaceQueryPath(String path) {
+        return path != null && !path.isBlank() && isWorkspacePath(path);
     }
 
     // ==================== Path classification ====================
