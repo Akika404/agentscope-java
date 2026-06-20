@@ -343,6 +343,31 @@ class ProjectAwareOverlayTest {
                 () -> "grep leaked namespace prefix: " + grepPaths);
     }
 
+    @Test
+    void namespacedMerge_deduplicatesRawProjectAndNamespacedPaths() throws IOException {
+        ProjectAwareOverlay ns = namespacedOverlay();
+        Files.writeString(project.resolve("hi.txt"), "needle raw", StandardCharsets.UTF_8);
+        ns.write(rc, "hi.txt", "needle namespaced");
+
+        LsResult ls = ns.ls(rc, "/");
+        assertTrue(ls.isSuccess());
+        List<String> lsPaths = ls.entries().stream().map(fi -> fi.path()).toList();
+        assertEquals(1, lsPaths.stream().filter(p -> p.equals("hi.txt")).count());
+        assertFalse(lsPaths.contains("/hi.txt"));
+
+        GlobResult glob = ns.glob(rc, "**/*.txt", "/");
+        assertTrue(glob.isSuccess());
+        List<String> globPaths = glob.matches().stream().map(fi -> fi.path()).toList();
+        assertEquals(1, globPaths.stream().filter(p -> p.equals("hi.txt")).count());
+        assertFalse(globPaths.contains("/hi.txt"));
+
+        GrepResult grep = ns.grep(rc, "needle", ".", null);
+        assertTrue(grep.isSuccess());
+        assertEquals(1, grep.matches().size());
+        assertEquals("hi.txt", grep.matches().get(0).path());
+        assertEquals("needle namespaced", grep.matches().get(0).text());
+    }
+
     /** True if a listing/search path exposes the raw {@code u1/} namespace folder. */
     private static boolean mentionsNamespaceDir(String path) {
         String p = path.replace('\\', '/');

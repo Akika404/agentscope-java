@@ -320,7 +320,8 @@ public class ProjectAwareOverlay extends OverlayFilesystem implements AbstractSa
                 if (isUnderNamespace(fi.path(), nsToDrop)) {
                     continue;
                 }
-                merged.put(fi.path(), fi);
+                FileInfo normalized = normalizeFileInfo(fi);
+                merged.put(normalized.path(), normalized);
             }
         }
     }
@@ -332,7 +333,8 @@ public class ProjectAwareOverlay extends OverlayFilesystem implements AbstractSa
                 if (isUnderNamespace(fi.path(), nsToDrop)) {
                     continue;
                 }
-                merged.put(fi.path(), fi);
+                FileInfo normalized = normalizeFileInfo(fi);
+                merged.put(normalized.path(), normalized);
             }
         }
     }
@@ -344,9 +346,30 @@ public class ProjectAwareOverlay extends OverlayFilesystem implements AbstractSa
                 if (isUnderNamespace(m.path(), nsToDrop)) {
                     continue;
                 }
-                merged.put(m.path() + ":" + m.line(), m);
+                GrepMatch normalized = normalizeGrepMatch(m);
+                merged.put(normalized.path() + ":" + normalized.line(), normalized);
             }
         }
+    }
+
+    private static FileInfo normalizeFileInfo(FileInfo fi) {
+        String path = normalizeResultPath(fi.path());
+        return new FileInfo(path, fi.isDirectory(), fi.size(), fi.modifiedAt());
+    }
+
+    private static GrepMatch normalizeGrepMatch(GrepMatch match) {
+        return new GrepMatch(normalizeResultPath(match.path()), match.line(), match.text());
+    }
+
+    private static String normalizeResultPath(String path) {
+        if (path == null) {
+            return null;
+        }
+        String normalized = path.replace('\\', '/');
+        while (normalized.startsWith("/")) {
+            normalized = normalized.substring(1);
+        }
+        return normalized;
     }
 
     private boolean isWorkspaceQueryPath(String path) {
