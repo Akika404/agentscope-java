@@ -173,7 +173,7 @@ public class WebSearchTool extends ToolBase {
 
 ### External execution tools
 
-External-execution tools delegate the actual work outside the agent runtime — typically to a human operator or an external system. The agent emits `RequireExternalExecutionEvent` and pauses until the result is fed back via `ExternalExecutionResultEvent`.
+External-execution tools delegate the actual work outside the agent runtime — typically to a human operator or an external system. The agent emits `RequireExternalExecutionEvent` and pauses. When the next call feeds back matching `ToolResultBlock`s, the agent emits `ExternalExecutionResultEvent` with the same `replyId` before continuing.
 
 This pattern is the foundation of [human-in-the-loop](./agent.md#human-in-the-loop) flows — some actions need human approval or human execution.
 
@@ -391,7 +391,7 @@ ReActAgent agent =
                 .build();
 ```
 
-Multiple `skillRepository(...)` calls append in order (low → high priority); when two repositories expose a skill with the same name, the later entry wins. Use `skillRepositories(List<AgentSkillRepository>)` to replace the list. Pass `dynamicSkillsEnabled(false)` to opt out of the auto-installed middleware (handy when an outer orchestrator like `HarnessAgent` attaches its own subclass).
+Multiple `skillRepository(...)` calls append in order (low → high priority); when two repositories expose a skill with the same name, the later entry wins. Use `skillRepositories(List<AgentSkillRepository>)` to replace the list.
 
 Reference implementations: `agentscope-examples/documentation/.../skill/AgentSkillExample.java`, `skill/SkillWithToolGroupExample.java`.
 

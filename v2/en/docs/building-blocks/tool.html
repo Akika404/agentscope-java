@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <meta property="article:modified_time" content="2026-06-09T07:40:24+00:00" /><link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="Context &amp; AgentState" href="context.html"><link rel="prev" title="Permission System" href="permission-system.html">
+    <meta property="article:modified_time" content="2026-08-09T00:51:33+00:00" /><link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="Context &amp; AgentState" href="context.html"><link rel="prev" title="Permission System" href="permission-system.html">
         <link rel="canonical" href="https://java.agentscope.io/v2/en/docs/building-blocks/tool.html">
         <link rel="prefetch" href="../../../../_static/logo.svg" as="image">
 
@@ -19,7 +19,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=6f24c6f4" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/homepage.css?v=16a56cbd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/homepage.css?v=f1c207f0" />
     
     
 
@@ -707,21 +707,33 @@
 <p class="caption" role="heading"><span class="caption-text">v2 · Integration</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../integration/overview.html">Overview</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/memory/index.html">Memory</a><input aria-label="Toggle navigation of Memory" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/model/index.html">Model Providers</a><input aria-label="Toggle navigation of Model Providers" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/openai.html">OpenAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/deepseek.html">DeepSeek</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/glm.html">GLM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/kimi.html">Kimi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/minimax.html">MiniMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/dashscope.html">DashScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/gemini.html">Gemini</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/anthropic.html">Anthropic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../integration/model/ollama.html">Ollama</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/memory/index.html">Memory</a><input aria-label="Toggle navigation of Memory" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/memory/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/memory/mem0.html">Mem0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/memory/bailian.html">Bailian Memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/memory/reme.html">ReMe</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/session/index.html">Agent State Store</a><input aria-label="Toggle navigation of Agent State Store" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/session/index.html">Agent State Store</a><input aria-label="Toggle navigation of Agent State Store" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/session/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/session/mysql.html">MySQL State Store</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/session/redis.html">Redis State Store</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/session/oss.html">OSS State Store</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/rag/index.html">RAG Knowledge Base</a><input aria-label="Toggle navigation of RAG Knowledge Base" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/rag/index.html">RAG Knowledge Base</a><input aria-label="Toggle navigation of RAG Knowledge Base" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/rag/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/rag/simple.html">Simple</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/rag/bailian.html">Bailian Knowledge</a></li>
@@ -730,28 +742,28 @@
 <li class="toctree-l2"><a class="reference internal" href="../../integration/rag/ragflow.html">RAGFlow</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/skill/index.html">Skill Repository</a><input aria-label="Toggle navigation of Skill Repository" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/skill/index.html">Skill Repository</a><input aria-label="Toggle navigation of Skill Repository" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/skill/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/skill/git-repository.html">Git Skill Repository</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/skill/mysql-repository.html">MySQL Skill Repository</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/skill/postgresql-repository.html">PostgreSQL Skill Repository</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/protocol/index.html">Agent Protocols</a><input aria-label="Toggle navigation of Agent Protocols" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/protocol/index.html">Agent Protocols</a><input aria-label="Toggle navigation of Agent Protocols" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/protocol/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/protocol/a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/protocol/agui.html">AG-UI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/protocol/agent-protocol.html">Agent Protocol</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/infrastructure/index.html">Infrastructure</a><input aria-label="Toggle navigation of Infrastructure" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/infrastructure/index.html">Infrastructure</a><input aria-label="Toggle navigation of Infrastructure" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/infrastructure/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/infrastructure/higress.html">Higress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/infrastructure/nacos.html">Nacos</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/infrastructure/scheduler.html">Scheduler</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/ecosystem/index.html">Ecosystem</a><input aria-label="Toggle navigation of Ecosystem" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../integration/ecosystem/index.html">Ecosystem</a><input aria-label="Toggle navigation of Ecosystem" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/ecosystem/overview.html">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/ecosystem/chat-completions-web.html">Chat Completions Web</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../integration/ecosystem/studio.html">Studio</a></li>
@@ -762,7 +774,26 @@
 <p class="caption" role="heading"><span class="caption-text">v2 · Blogs</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-v2-release.html">AgentScope 2.0 Release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-v2-explained.html">AgentScope 2.0 Production-Ready - Enterprise Harness Explained</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-v1-harness.html">AgentScope Java 1.1 · Harness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-v1-builder.html">AgentScope Builder Release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-v2-coding-agent.html">The Second Half of Coding Agents: From Personal Efficiency to Org-Level Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/managed-agents-agentscope-rumtime.html">Managed Agents Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/managed-agents-agentscope-rumtime.html#why-agentscope-2-0-is-a-good-foundation-for-managed-agents">Why AgentScope 2.0 Is a Good Foundation for Managed Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/managed-agents-agentscope-rumtime.html#enterprise-managed-agents-platform-in-detail">Enterprise Managed Agents Platform in Detail</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/managed-agents-agentscope-rumtime.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-service-release.html">What Is AgentScope Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-service-release.html#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-service-release.html#how-agents-attach">How Agents Attach</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-service-release.html#try-it-locally">Try It Locally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-service-release.html#roadmap-closing">Roadmap &amp; Closing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blogs/agentscope-service-release-tech.html">AgentScope Service Explained: Control Plane, Data Plane &amp; Recoverable Runtime</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../blogs/usecases/index.html">Customer Use Cases</a><input aria-label="Toggle navigation of Customer Use Cases" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../blogs/usecases/finxscope.html">FinXScope: A Financial-Grade Agent Foundation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../blogs/usecases/logistics.html">From Config-Driven to Business-Native: Enterprise Agent Practice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../blogs/usecases/aidc-logistics.html">AIDC Logistics: Enterprise Agent Development Practice</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">v2 · Community</span></p>
 <ul>
@@ -806,21 +837,33 @@
 <p class="caption" role="heading"><span class="caption-text">v2 · 集成</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../zh/integration/overview.html">概览</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/memory/index.html">记忆</a><input aria-label="Toggle navigation of 记忆" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/model/index.html">模型提供商</a><input aria-label="Toggle navigation of 模型提供商" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/openai.html">OpenAI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/deepseek.html">DeepSeek</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/glm.html">GLM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/kimi.html">Kimi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/minimax.html">MiniMax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/dashscope.html">DashScope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/gemini.html">Gemini</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/anthropic.html">Anthropic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/model/ollama.html">Ollama</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/memory/index.html">记忆</a><input aria-label="Toggle navigation of 记忆" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/memory/overview.html">概览</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/memory/mem0.html">Mem0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/memory/bailian.html">百炼记忆</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/memory/reme.html">ReMe</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/session/index.html">Agent 状态存储</a><input aria-label="Toggle navigation of Agent 状态存储" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/session/index.html">Agent 状态存储</a><input aria-label="Toggle navigation of Agent 状态存储" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/session/overview.html">概览</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/session/mysql.html">MySQL 状态存储</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/session/redis.html">Redis 状态存储</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/session/oss.html">OSS 状态存储</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/rag/index.html">RAG 知识库</a><input aria-label="Toggle navigation of RAG 知识库" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/rag/index.html">RAG 知识库</a><input aria-label="Toggle navigation of RAG 知识库" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/rag/overview.html">概览</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/rag/simple.html">Simple</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/rag/bailian.html">百炼知识库</a></li>
@@ -829,28 +872,28 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/rag/ragflow.html">RAGFlow</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/skill/index.html">技能仓库</a><input aria-label="Toggle navigation of 技能仓库" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/skill/index.html">技能仓库</a><input aria-label="Toggle navigation of 技能仓库" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/skill/overview.html">概览</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/skill/git-repository.html">Git 技能仓库</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/skill/mysql-repository.html">MySQL 技能仓库</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/skill/postgresql-repository.html">PostgreSQL 技能仓库</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/protocol/index.html">智能体协议</a><input aria-label="Toggle navigation of 智能体协议" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/protocol/index.html">智能体协议</a><input aria-label="Toggle navigation of 智能体协议" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/protocol/overview.html">概览</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/protocol/a2a.html">A2A</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/protocol/agui.html">AG-UI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/protocol/agent-protocol.html">Agent Protocol</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/infrastructure/index.html">基础设施</a><input aria-label="Toggle navigation of 基础设施" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/infrastructure/index.html">基础设施</a><input aria-label="Toggle navigation of 基础设施" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/infrastructure/overview.html">概览</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/infrastructure/higress.html">Higress</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/infrastructure/nacos.html">Nacos</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/infrastructure/scheduler.html">Scheduler</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/ecosystem/index.html">生态扩展</a><input aria-label="Toggle navigation of 生态扩展" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/integration/ecosystem/index.html">生态扩展</a><input aria-label="Toggle navigation of 生态扩展" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/ecosystem/overview.html">概览</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/ecosystem/chat-completions-web.html">Chat Completions Web</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../zh/integration/ecosystem/studio.html">Studio</a></li>
@@ -861,8 +904,26 @@
 <p class="caption" role="heading"><span class="caption-text">v2 · 博客</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-v2-release.html">AgentScope 2.0 发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-v2-explained.html">AgentScope 2.0 生产可用，企业级 Harness 技术全解析</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-v1-harness.html">AgentScope Java 1.1 · Harness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-v1-builder.html">AgentScope Builder 发布</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-v2-coding-agent.html">Coding Agent 的下半场：从个人提效到组织级研发体系</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/managed-agents-agentscope-rumtime.html">Managed Agents 背景</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/managed-agents-agentscope-rumtime.html#agentscope-2-0-managed-agents">为什么 AgentScope 2.0 适合做 Managed Agents 底座</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/managed-agents-agentscope-rumtime.html#id1">企业级 Managed Agents 平台详解</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/managed-agents-agentscope-rumtime.html#id10">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-service-release.html">什么是 AgentScope Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-service-release.html#id1">整体架构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-service-release.html#agent">Agent 如何接入</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-service-release.html#id9">本地快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-service-release.html#roadmap">Roadmap &amp; 总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../zh/blogs/agentscope-service-release-tech.html">AgentScope Service 技术解读：控制面、数据面与可恢复的 Agent 运行时</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../zh/blogs/usecases/index.html">客户实践案例</a><input aria-label="Toggle navigation of 客户实践案例" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/blogs/usecases/finxscope.html">FinXScope：基于 AgentScope 构建金融级智能体底座</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/blogs/usecases/logistics.html">从配置驱动到业务原生：企业级 Agent 开发实践</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../zh/blogs/usecases/aidc-logistics.html">AIDC 物流：企业级 Agent 开发实践</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">v2 · 社区</span></p>
 <ul>
@@ -1051,12 +1112,12 @@
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SimpleTools</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="nd">@Tool</span><span class="p">(</span>
-<span class="w">            </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;get_current_time&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Returns the current time in a given IANA timezone.&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"get_current_time"</span><span class="p">,</span>
+<span class="w">            </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Returns the current time in a given IANA timezone."</span><span class="p">,</span>
 <span class="w">            </span><span class="n">readOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">            </span><span class="n">concurrencySafe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getCurrentTime</span><span class="p">(</span>
-<span class="w">            </span><span class="nd">@ToolParam</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;timezone&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;IANA timezone, e.g. Asia/Shanghai&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="nd">@ToolParam</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"timezone"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"IANA timezone, e.g. Asia/Shanghai"</span><span class="p">)</span>
 <span class="w">                    </span><span class="n">String</span><span class="w"> </span><span class="n">timezone</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">(</span><span class="n">ZoneId</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">timezone</span><span class="p">))</span>
 <span class="w">                </span><span class="p">.</span><span class="na">format</span><span class="p">(</span><span class="n">DateTimeFormatter</span><span class="p">.</span><span class="na">ISO_LOCAL_DATE_TIME</span><span class="p">);</span>
@@ -1128,15 +1189,15 @@
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">WebSearchTool</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="kd">super</span><span class="p">(</span>
 <span class="w">                </span><span class="n">ToolBase</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">                        </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;WebSearch&quot;</span><span class="p">)</span>
-<span class="w">                        </span><span class="p">.</span><span class="na">description</span><span class="p">(</span><span class="s">&quot;Search the web for information on a given query.&quot;</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"WebSearch"</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">description</span><span class="p">(</span><span class="s">"Search the web for information on a given query."</span><span class="p">)</span>
 <span class="w">                        </span><span class="p">.</span><span class="na">inputSchema</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
-<span class="w">                                </span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;object&quot;</span><span class="p">,</span>
-<span class="w">                                </span><span class="s">&quot;properties&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
-<span class="w">                                        </span><span class="s">&quot;query&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
-<span class="w">                                                </span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;string&quot;</span><span class="p">,</span>
-<span class="w">                                                </span><span class="s">&quot;description&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;The search query.&quot;</span><span class="p">)),</span>
-<span class="w">                                </span><span class="s">&quot;required&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;query&quot;</span><span class="p">)))</span>
+<span class="w">                                </span><span class="s">"type"</span><span class="p">,</span><span class="w"> </span><span class="s">"object"</span><span class="p">,</span>
+<span class="w">                                </span><span class="s">"properties"</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
+<span class="w">                                        </span><span class="s">"query"</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
+<span class="w">                                                </span><span class="s">"type"</span><span class="p">,</span><span class="w"> </span><span class="s">"string"</span><span class="p">,</span>
+<span class="w">                                                </span><span class="s">"description"</span><span class="p">,</span><span class="w"> </span><span class="s">"The search query."</span><span class="p">)),</span>
+<span class="w">                                </span><span class="s">"required"</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"query"</span><span class="p">)))</span>
 <span class="w">                        </span><span class="p">.</span><span class="na">readOnly</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
 <span class="w">                        </span><span class="p">.</span><span class="na">concurrencySafe</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
 <span class="w">    </span><span class="p">}</span>
@@ -1144,12 +1205,12 @@
 <span class="w">    </span><span class="nd">@Override</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Mono</span><span class="o">&lt;</span><span class="n">PermissionDecision</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">checkPermissions</span><span class="p">(</span>
 <span class="w">            </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">toolInput</span><span class="p">,</span><span class="w"> </span><span class="n">ToolExecutionContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Mono</span><span class="p">.</span><span class="na">just</span><span class="p">(</span><span class="n">PermissionDecision</span><span class="p">.</span><span class="na">allow</span><span class="p">(</span><span class="s">&quot;Web search is read-only.&quot;</span><span class="p">));</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Mono</span><span class="p">.</span><span class="na">just</span><span class="p">(</span><span class="n">PermissionDecision</span><span class="p">.</span><span class="na">allow</span><span class="p">(</span><span class="s">"Web search is read-only."</span><span class="p">));</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="nd">@Override</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Mono</span><span class="o">&lt;</span><span class="n">ToolResultBlock</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">callAsync</span><span class="p">(</span><span class="n">ToolCallParam</span><span class="w"> </span><span class="n">param</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">param</span><span class="p">.</span><span class="na">getInput</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;query&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">param</span><span class="p">.</span><span class="na">getInput</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="s">"query"</span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">doSearchAsync</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">-&gt;</span>
 <span class="w">                        </span><span class="n">ToolResultBlock</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
@@ -1164,7 +1225,7 @@
 </section>
 <section id="external-execution-tools">
 <h3>External execution tools<a class="headerlink" href="#external-execution-tools" title="Link to this heading">¶</a></h3>
-<p>External-execution tools delegate the actual work outside the agent runtime — typically to a human operator or an external system. The agent emits <code class="docutils literal notranslate"><span class="pre">RequireExternalExecutionEvent</span></code> and pauses until the result is fed back via <code class="docutils literal notranslate"><span class="pre">ExternalExecutionResultEvent</span></code>.</p>
+<p>External-execution tools delegate the actual work outside the agent runtime — typically to a human operator or an external system. The agent emits <code class="docutils literal notranslate"><span class="pre">RequireExternalExecutionEvent</span></code> and pauses. When the next call feeds back matching <code class="docutils literal notranslate"><span class="pre">ToolResultBlock</span></code>s, the agent emits <code class="docutils literal notranslate"><span class="pre">ExternalExecutionResultEvent</span></code> with the same <code class="docutils literal notranslate"><span class="pre">replyId</span></code> before continuing.</p>
 <p>This pattern is the foundation of <a class="reference internal" href="agent.html#human-in-the-loop"><span class="std std-ref">human-in-the-loop</span></a> flows — some actions need human approval or human execution.</p>
 <p>To create an external tool, set <code class="docutils literal notranslate"><span class="pre">externalTool</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> and skip implementing <code class="docutils literal notranslate"><span class="pre">callAsync</span></code>:</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.agentscope.core.permission.PermissionDecision</span><span class="p">;</span>
@@ -1179,14 +1240,14 @@
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">HumanApprovalTool</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="kd">super</span><span class="p">(</span>
 <span class="w">                </span><span class="n">ToolBase</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">                        </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;HumanApproval&quot;</span><span class="p">)</span>
-<span class="w">                        </span><span class="p">.</span><span class="na">description</span><span class="p">(</span><span class="s">&quot;Request human approval for a sensitive operation.&quot;</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"HumanApproval"</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">description</span><span class="p">(</span><span class="s">"Request human approval for a sensitive operation."</span><span class="p">)</span>
 <span class="w">                        </span><span class="p">.</span><span class="na">inputSchema</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
-<span class="w">                                </span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;object&quot;</span><span class="p">,</span>
-<span class="w">                                </span><span class="s">&quot;properties&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
-<span class="w">                                        </span><span class="s">&quot;action&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;string&quot;</span><span class="p">),</span>
-<span class="w">                                        </span><span class="s">&quot;reason&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;string&quot;</span><span class="p">)),</span>
-<span class="w">                                </span><span class="s">&quot;required&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;action&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;reason&quot;</span><span class="p">)))</span>
+<span class="w">                                </span><span class="s">"type"</span><span class="p">,</span><span class="w"> </span><span class="s">"object"</span><span class="p">,</span>
+<span class="w">                                </span><span class="s">"properties"</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span>
+<span class="w">                                        </span><span class="s">"action"</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"type"</span><span class="p">,</span><span class="w"> </span><span class="s">"string"</span><span class="p">),</span>
+<span class="w">                                        </span><span class="s">"reason"</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"type"</span><span class="p">,</span><span class="w"> </span><span class="s">"string"</span><span class="p">)),</span>
+<span class="w">                                </span><span class="s">"required"</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"action"</span><span class="p">,</span><span class="w"> </span><span class="s">"reason"</span><span class="p">)))</span>
 <span class="w">                        </span><span class="p">.</span><span class="na">readOnly</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
 <span class="w">                        </span><span class="p">.</span><span class="na">concurrencySafe</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
 <span class="w">                        </span><span class="p">.</span><span class="na">externalTool</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
@@ -1195,7 +1256,7 @@
 <span class="w">    </span><span class="nd">@Override</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Mono</span><span class="o">&lt;</span><span class="n">PermissionDecision</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">checkPermissions</span><span class="p">(</span>
 <span class="w">            </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">toolInput</span><span class="p">,</span><span class="w"> </span><span class="n">ToolExecutionContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Mono</span><span class="p">.</span><span class="na">just</span><span class="p">(</span><span class="n">PermissionDecision</span><span class="p">.</span><span class="na">allow</span><span class="p">(</span><span class="s">&quot;External tool dispatch is always allowed.&quot;</span><span class="p">));</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Mono</span><span class="p">.</span><span class="na">just</span><span class="p">(</span><span class="n">PermissionDecision</span><span class="p">.</span><span class="na">allow</span><span class="p">(</span><span class="s">"External tool dispatch is always allowed."</span><span class="p">));</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1246,12 +1307,12 @@
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PersonalizedTools</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="nd">@Tool</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;greet&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Greet the user with a custom greeting&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Tool</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"greet"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Greet the user with a custom greeting"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span>
-<span class="w">            </span><span class="nd">@ToolParam</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;greeting&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Greeting word, e.g. &#39;Hello&#39;&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="nd">@ToolParam</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"greeting"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Greeting word, e.g. 'Hello'"</span><span class="p">)</span>
 <span class="w">                    </span><span class="n">String</span><span class="w"> </span><span class="n">greeting</span><span class="p">,</span><span class="w">                  </span><span class="c1">// ← supplied by the model</span>
 <span class="w">            </span><span class="n">UserContext</span><span class="w"> </span><span class="n">userCtx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                    </span><span class="c1">// ← injected by the framework</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">greeting</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">userCtx</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;unknown&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">userCtx</span><span class="p">.</span><span class="na">username</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">greeting</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">", "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">userCtx</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">"unknown"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">userCtx</span><span class="p">.</span><span class="na">username</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"!"</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1259,11 +1320,11 @@
 <p>The caller registers the POJO by type once; every <code class="docutils literal notranslate"><span class="pre">call</span></code> then routes the matching instance to any tool that asks for it:</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">RuntimeContext</span><span class="w"> </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">RuntimeContext</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">UserContext</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UserContext</span><span class="p">(</span><span class="s">&quot;alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;en&quot;</span><span class="p">))</span>
-<span class="w">                </span><span class="p">.</span><span class="na">userId</span><span class="p">(</span><span class="s">&quot;alice&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">UserContext</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UserContext</span><span class="p">(</span><span class="s">"alice"</span><span class="p">,</span><span class="w"> </span><span class="s">"en"</span><span class="p">))</span>
+<span class="w">                </span><span class="p">.</span><span class="na">userId</span><span class="p">(</span><span class="s">"alice"</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
-<span class="n">agent</span><span class="p">.</span><span class="na">call</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">UserMessage</span><span class="p">(</span><span class="s">&quot;Greet me.&quot;</span><span class="p">)),</span><span class="w"> </span><span class="n">ctx</span><span class="p">).</span><span class="na">block</span><span class="p">();</span>
+<span class="n">agent</span><span class="p">.</span><span class="na">call</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">UserMessage</span><span class="p">(</span><span class="s">"Greet me."</span><span class="p">)),</span><span class="w"> </span><span class="n">ctx</span><span class="p">).</span><span class="na">block</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>The model never sees <code class="docutils literal notranslate"><span class="pre">userCtx</span></code> — it is not part of the tool’s JSON schema. Full example: <code class="docutils literal notranslate"><span class="pre">agentscope-examples/documentation/.../tool/ToolExecutionContextExample.java</span></code>.</p>
@@ -1321,9 +1382,9 @@ STDIO</label><div class="sd-tab-content docutils">
 
 <span class="n">McpClientWrapper</span><span class="w"> </span><span class="n">filesystem</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">McpClientBuilder</span><span class="p">.</span><span class="na">stdio</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;filesystem&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">command</span><span class="p">(</span><span class="s">&quot;mcp-server-filesystem&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">args</span><span class="p">(</span><span class="s">&quot;--root&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/my/project&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"filesystem"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">command</span><span class="p">(</span><span class="s">"mcp-server-filesystem"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">args</span><span class="p">(</span><span class="s">"--root"</span><span class="p">,</span><span class="w"> </span><span class="s">"/my/project"</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">Toolkit</span><span class="w"> </span><span class="n">toolkit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Toolkit</span><span class="p">();</span>
@@ -1340,9 +1401,9 @@ Streamable HTTP</label><div class="sd-tab-content docutils">
 
 <span class="n">McpClientWrapper</span><span class="w"> </span><span class="n">weather</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">McpClientBuilder</span><span class="p">.</span><span class="na">streamableHttp</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;weather&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="s">&quot;https://api.weather.com/mcp&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">&quot;Authorization&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Bearer xxx&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"weather"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="s">"https://api.weather.com/mcp"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer xxx"</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">Toolkit</span><span class="w"> </span><span class="n">toolkit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Toolkit</span><span class="p">();</span>
@@ -1358,8 +1419,8 @@ SSE</label><div class="sd-tab-content docutils">
 
 <span class="n">McpClientWrapper</span><span class="w"> </span><span class="n">search</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">McpClientBuilder</span><span class="p">.</span><span class="na">sse</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;search&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="s">&quot;https://api.search.com/mcp/sse&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"search"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="s">"https://api.search.com/mcp/sse"</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 
 <span class="n">Toolkit</span><span class="w"> </span><span class="n">toolkit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Toolkit</span><span class="p">();</span>
@@ -1384,14 +1445,14 @@ SSE</label><div class="sd-tab-content docutils">
 
 <span class="n">ReActAgent</span><span class="w"> </span><span class="n">agent</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">ReActAgent</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;SkillCreator&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">sysPrompt</span><span class="p">(</span><span class="s">&quot;...&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"SkillCreator"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">sysPrompt</span><span class="p">(</span><span class="s">"..."</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">skillRepository</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">FileSystemSkillRepository</span><span class="p">(</span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&quot;/path/to/skills&quot;</span><span class="p">),</span><span class="w"> </span><span class="kc">false</span><span class="p">))</span>
+<span class="w">                </span><span class="p">.</span><span class="na">skillRepository</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">FileSystemSkillRepository</span><span class="p">(</span><span class="n">Paths</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">"/path/to/skills"</span><span class="p">),</span><span class="w"> </span><span class="kc">false</span><span class="p">))</span>
 <span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>Multiple <code class="docutils literal notranslate"><span class="pre">skillRepository(...)</span></code> calls append in order (low → high priority); when two repositories expose a skill with the same name, the later entry wins. Use <code class="docutils literal notranslate"><span class="pre">skillRepositories(List&lt;AgentSkillRepository&gt;)</span></code> to replace the list. Pass <code class="docutils literal notranslate"><span class="pre">dynamicSkillsEnabled(false)</span></code> to opt out of the auto-installed middleware (handy when an outer orchestrator like <code class="docutils literal notranslate"><span class="pre">HarnessAgent</span></code> attaches its own subclass).</p>
+<p>Multiple <code class="docutils literal notranslate"><span class="pre">skillRepository(...)</span></code> calls append in order (low → high priority); when two repositories expose a skill with the same name, the later entry wins. Use <code class="docutils literal notranslate"><span class="pre">skillRepositories(List&lt;AgentSkillRepository&gt;)</span></code> to replace the list.</p>
 <p>Reference implementations: <code class="docutils literal notranslate"><span class="pre">agentscope-examples/documentation/.../skill/AgentSkillExample.java</span></code>, <code class="docutils literal notranslate"><span class="pre">skill/SkillWithToolGroupExample.java</span></code>.</p>
 </section>
 <section id="how-skills-work">
@@ -1426,8 +1487,8 @@ SSE</label><div class="sd-tab-content docutils">
 </div>
 <p>Example tool call payload:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;load_skill_through_path&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;skillId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pdf-extractor&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SKILL.md&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"load_skill_through_path"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"skillId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pdf-extractor"</span><span class="p">,</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SKILL.md"</span><span class="w"> </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1454,13 +1515,13 @@ SSE</label><div class="sd-tab-content docutils">
 
 <span class="n">Toolkit</span><span class="w"> </span><span class="n">toolkit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Toolkit</span><span class="p">();</span>
 <span class="n">toolkit</span><span class="p">.</span><span class="na">registerTool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ShellCommandTool</span><span class="p">());</span>
-<span class="n">toolkit</span><span class="p">.</span><span class="na">registerTool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ReadFileTool</span><span class="p">(</span><span class="s">&quot;/path/to/base/dir&quot;</span><span class="p">));</span>
-<span class="n">toolkit</span><span class="p">.</span><span class="na">registerTool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">WriteFileTool</span><span class="p">(</span><span class="s">&quot;/path/to/base/dir&quot;</span><span class="p">));</span>
+<span class="n">toolkit</span><span class="p">.</span><span class="na">registerTool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ReadFileTool</span><span class="p">(</span><span class="s">"/path/to/base/dir"</span><span class="p">));</span>
+<span class="n">toolkit</span><span class="p">.</span><span class="na">registerTool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">WriteFileTool</span><span class="p">(</span><span class="s">"/path/to/base/dir"</span><span class="p">));</span>
 
 <span class="n">ReActAgent</span><span class="w"> </span><span class="n">agent</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">ReActAgent</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;SkillAgent&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">sysPrompt</span><span class="p">(</span><span class="s">&quot;...&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"SkillAgent"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">sysPrompt</span><span class="p">(</span><span class="s">"..."</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">toolkit</span><span class="p">(</span><span class="n">toolkit</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">skillRepository</span><span class="p">(</span><span class="n">skillRepo</span><span class="p">)</span>
@@ -1481,22 +1542,22 @@ SSE</label><div class="sd-tab-content docutils">
 
 <span class="c1">// 1. Create a tool group bound to a skill (initially inactive)</span>
 <span class="n">toolkit</span><span class="p">.</span><span class="na">createSkillToolGroup</span><span class="p">(</span>
-<span class="w">        </span><span class="s">&quot;analysis-tools&quot;</span><span class="p">,</span><span class="w">                </span><span class="c1">// group name</span>
-<span class="w">        </span><span class="s">&quot;Data analysis tools&quot;</span><span class="p">,</span><span class="w">           </span><span class="c1">// description</span>
+<span class="w">        </span><span class="s">"analysis-tools"</span><span class="p">,</span><span class="w">                </span><span class="c1">// group name</span>
+<span class="w">        </span><span class="s">"Data analysis tools"</span><span class="p">,</span><span class="w">           </span><span class="c1">// description</span>
 <span class="w">        </span><span class="kc">false</span><span class="p">,</span><span class="w">                           </span><span class="c1">// initially inactive</span>
-<span class="w">        </span><span class="s">&quot;data-analysis&quot;</span><span class="p">);</span><span class="w">                </span><span class="c1">// bound skill name</span>
+<span class="w">        </span><span class="s">"data-analysis"</span><span class="p">);</span><span class="w">                </span><span class="c1">// bound skill name</span>
 
 <span class="c1">// 2. Register tools into that group</span>
 <span class="n">toolkit</span><span class="p">.</span><span class="na">registration</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="na">tool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">AnalysisTools</span><span class="p">())</span>
-<span class="w">        </span><span class="p">.</span><span class="na">group</span><span class="p">(</span><span class="s">&quot;analysis-tools&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">group</span><span class="p">(</span><span class="s">"analysis-tools"</span><span class="p">)</span>
 <span class="w">        </span><span class="p">.</span><span class="na">apply</span><span class="p">();</span>
 
 <span class="c1">// 3. Build the agent with meta tool for model-driven group switching</span>
 <span class="n">ReActAgent</span><span class="w"> </span><span class="n">agent</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">ReActAgent</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;AnalysisAgent&quot;</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">sysPrompt</span><span class="p">(</span><span class="s">&quot;...&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"AnalysisAgent"</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">sysPrompt</span><span class="p">(</span><span class="s">"..."</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">toolkit</span><span class="p">(</span><span class="n">toolkit</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">skillRepository</span><span class="p">(</span><span class="n">skillRepo</span><span class="p">)</span>
@@ -1524,29 +1585,29 @@ SSE</label><div class="sd-tab-content docutils">
 
 <span class="n">ToolGroup</span><span class="w"> </span><span class="n">database</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">ToolGroup</span><span class="p">(</span>
-<span class="w">                </span><span class="s">&quot;database&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s">&quot;Tools for database operations.&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s">"database"</span><span class="p">,</span>
+<span class="w">                </span><span class="s">"Tools for database operations."</span><span class="p">,</span>
 <span class="w">                </span><span class="n">ToolGroupScope</span><span class="p">.</span><span class="na">SESSION</span><span class="p">,</span>
 <span class="w">                </span><span class="cm">/* active = */</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
-<span class="n">database</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">&quot;db_query&quot;</span><span class="p">);</span>
-<span class="n">database</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">&quot;db_migrate&quot;</span><span class="p">);</span>
+<span class="n">database</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">"db_query"</span><span class="p">);</span>
+<span class="n">database</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">"db_migrate"</span><span class="p">);</span>
 <span class="n">toolkit</span><span class="p">.</span><span class="na">registerTool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DatabaseTools</span><span class="p">());</span>
 <span class="n">toolkit</span><span class="p">.</span><span class="na">registerToolGroup</span><span class="p">(</span><span class="n">database</span><span class="p">);</span>
 
 <span class="n">ToolGroup</span><span class="w"> </span><span class="n">deployment</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">ToolGroup</span><span class="p">(</span>
-<span class="w">                </span><span class="s">&quot;deployment&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s">&quot;Tools for deploying services.&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s">"deployment"</span><span class="p">,</span>
+<span class="w">                </span><span class="s">"Tools for deploying services."</span><span class="p">,</span>
 <span class="w">                </span><span class="n">ToolGroupScope</span><span class="p">.</span><span class="na">SESSION</span><span class="p">,</span>
 <span class="w">                </span><span class="cm">/* active = */</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
-<span class="n">deployment</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">&quot;deploy&quot;</span><span class="p">);</span>
-<span class="n">deployment</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">&quot;rollback&quot;</span><span class="p">);</span>
+<span class="n">deployment</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">"deploy"</span><span class="p">);</span>
+<span class="n">deployment</span><span class="p">.</span><span class="na">addTool</span><span class="p">(</span><span class="s">"rollback"</span><span class="p">);</span>
 <span class="n">toolkit</span><span class="p">.</span><span class="na">registerTool</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DeploymentTools</span><span class="p">());</span>
 <span class="n">toolkit</span><span class="p">.</span><span class="na">registerToolGroup</span><span class="p">(</span><span class="n">deployment</span><span class="p">);</span>
 
 <span class="n">ReActAgent</span><span class="w"> </span><span class="n">agent</span><span class="w"> </span><span class="o">=</span>
 <span class="w">        </span><span class="n">ReActAgent</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&quot;router&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">"router"</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">toolkit</span><span class="p">(</span><span class="n">toolkit</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">enableMetaTool</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
@@ -1668,7 +1729,7 @@ Human-in-the-Loop</div>
             Made with 
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             <div class="last-updated">
-              Last updated on 2026-06-09</div>
+              Last updated on 2026-08-09</div>
           </div>
           <div class="right-details">
             <div class="icons">
@@ -1770,6 +1831,6 @@ Human-in-the-Loop</div>
     <script src="../../../../_static/notice-bar.js?v=6a544133"></script>
     <script src="../../../../_static/mermaid-zoom.js?v=b287901b"></script>
     <script src="../../../../_static/version.js?v=b09c2e6c"></script>
-    <script src="../../../../_static/ai-context-menu.js?v=0f9728a6"></script>
+    <script src="../../../../_static/ai-context-menu.js?v=915d0de6"></script>
     </body>
 </html>

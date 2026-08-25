@@ -243,7 +243,7 @@ toolkit.registerTool(new ShellCommandTool(allowedCommands, callback));
 
 ```java
 import io.agentscope.core.tool.multimodal.DashScopeMultiModalTool;
-import io.agentscope.core.tool.multimodal.OpenAIMultiModalTool;
+import io.agentscope.extensions.model.openai.tool.OpenAIMultiModalTool;
 
 toolkit.registerTool(new DashScopeMultiModalTool(System.getenv("DASHSCOPE_API_KEY")));
 toolkit.registerTool(new OpenAIMultiModalTool(System.getenv("OPENAI_API_KEY")));
@@ -296,7 +296,7 @@ public class CustomTool implements AgentTool {
 
 ```java
 Toolkit toolkit = new Toolkit(ToolkitConfig.builder()
-    .parallel(true)                    // 并行执行多个工具
+    .parallel(false)                   // 串行执行多个工具（默认并行）
     .allowToolDeletion(false)          // 禁止删除工具
     .executionConfig(ExecutionConfig.builder()
         .timeout(Duration.ofSeconds(30))
@@ -306,7 +306,7 @@ Toolkit toolkit = new Toolkit(ToolkitConfig.builder()
 
 | 配置项 | 说明 | 默认值 |
 |--------|------|--------|
-| `parallel` | 是否并行执行多个工具 | `false` |
+| `parallel` | 是否并行执行多个工具 | `true` |
 | `allowToolDeletion` | 是否允许删除工具 | `true` |
 | `executionConfig.timeout` | 工具执行超时时间 | 5 分钟 |
 
